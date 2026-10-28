@@ -526,8 +526,9 @@ const anexos = [
   p(`El código, los datos de mercado con la fuente de cada cifra y los gráficos de este trabajo están disponibles en el repositorio https://github.com/Andres-Leach/flujo-tfg. Para reproducir los resultados basta con ejecutar, en este orden, modelo.py, graficos.py y exportar_excel.py, y cualquier hipótesis puede cambiarse en hipotesis.py para recalcular todo el plan.`),
   p(`Todos los porcentajes del Anexo I proceden de fuentes secundarias ya citadas en la bibliografía. La aportación propia consiste en reunir, cruzar y representar esos datos, y en construir el modelo financiero; los únicos datos primarios del trabajo son las entrevistas.`),
 
-  h1("Anexo III. Guion de las entrevistas exploratorias"),
-  p(`[[PENDIENTE DE COMPLETAR POR EL AUTOR: fechas en que se hicieron las entrevistas, medio (presencial, videollamada) y tabla anónima con el perfil de los quince entrevistados (edad, actividad, años como autónomo). A continuación figura una propuesta de guion que debe ajustarse a las preguntas que se plantearon realmente.]]`),
+  h1("Anexo III. Entrevistas exploratorias"),
+  p(`**Método.** Se realizaron quince entrevistas semiestructuradas a autónomos y *freelancers* de entre 20 y 35 años, contactados a través de redes personales y comunidades profesionales. Las entrevistas se hicieron entre [[mes y año]] y [[mes y año]], por [[videollamada / en persona]], con una duración aproximada de [[XX]] minutos. Se garantizó el anonimato de los participantes, que se identifican con un número.`),
+  p(`**Guion.** Las preguntas siguieron este orden, aunque se adaptaron a cada conversación:`),
   ...vinetas([
     "¿A qué te dedicas y cuánto tiempo llevas como autónomo?",
     "¿Cómo organizas tus ingresos y gastos? ¿Usas alguna herramienta?",
@@ -538,6 +539,12 @@ const anexos = [
     "¿Trabajas con una gestoría? ¿Qué te aporta y qué echas en falta?",
     "¿Pagarías por un servicio que te ayudara a entender y organizar tu dinero? ¿Cuánto te parecería razonable?",
   ]),
+  leyenda("Tabla", "III.1", "Perfil de los entrevistados y respuestas principales"),
+  tabla(["Nº", "Edad", "Actividad", "Años como autónomo", "¿Sabe cuánto gana neto?", "¿Separa cuentas?", "¿Gestoría?"],
+    Array.from({ length: 15 }, (_, i) => [String(i + 1), "[[ ]]", "[[ ]]", "[[ ]]", "[[ ]]", "[[ ]]", "[[ ]]"]),
+    [600, 800, 2270, 1300, 1500, 1300, 1300], { numericas: false }),
+  fuente("elaboración propia a partir de las entrevistas realizadas."),
+  p(`**Resumen de resultados.** De los quince entrevistados, [[X]] no sabían calcular cuánto ganaban una vez descontados impuestos y gastos, [[X]] mezclaban la cuenta personal y la de la actividad y [[X]] trabajaban con una gestoría. [[X]] afirmaron que pagarían por un servicio como el descrito, con un precio razonable de entre [[X]] y [[X]] € al mes. Entre las respuestas más repetidas destacan: [[dos o tres frases textuales y anónimas de los entrevistados]].`),
 ];
 
 // ------------------------------------------------- DOCUMENTO
