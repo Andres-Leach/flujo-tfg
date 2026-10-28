@@ -523,7 +523,7 @@ const anexos = [
 
   h1("Anexo II. Modelo de cálculo y reproducibilidad"),
   p(`El plan económico-financiero se ha calculado con un modelo mensual de 36 periodos programado en Python. El modelo parte de un único fichero de hipótesis y genera, para cada escenario, la cuenta de resultados, la tesorería con el calendario real del IVA y del IRPF, el balance, los criterios de rentabilidad y el análisis de sensibilidad. Como comprobación de coherencia, el programa verifica que el activo y la suma del patrimonio neto y el pasivo coinciden en cada cierre. Los resultados se vuelcan también en una hoja de cálculo (Modelo_financiero_Flujo.xlsx) con el detalle mes a mes.`),
-  p(`El código, los datos de mercado con la fuente de cada cifra y los gráficos de este trabajo están disponibles en el repositorio [[https://github.com/USUARIO/flujo-tfg]]. Para reproducir los resultados basta con ejecutar, en este orden, modelo.py, graficos.py y exportar_excel.py, y cualquier hipótesis puede cambiarse en hipotesis.py para recalcular todo el plan.`),
+  p(`El código, los datos de mercado con la fuente de cada cifra y los gráficos de este trabajo están disponibles en el repositorio https://github.com/Andres-Leach/flujo-tfg. Para reproducir los resultados basta con ejecutar, en este orden, modelo.py, graficos.py y exportar_excel.py, y cualquier hipótesis puede cambiarse en hipotesis.py para recalcular todo el plan.`),
   p(`Todos los porcentajes del Anexo I proceden de fuentes secundarias ya citadas en la bibliografía. La aportación propia consiste en reunir, cruzar y representar esos datos, y en construir el modelo financiero; los únicos datos primarios del trabajo son las entrevistas.`),
 
   h1("Anexo III. Guion de las entrevistas exploratorias"),
