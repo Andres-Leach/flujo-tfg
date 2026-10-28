@@ -97,15 +97,26 @@ MINIMO_PERSONAL = 5_550
 
 ESCALA_ESTATAL = [(12_450, .095), (20_200, .12), (35_200, .15), (60_000, .185),
                   (300_000, .225), (float("inf"), .245)]
-ESCALA_ARAGON = [(13_072.5, .095), (21_210, .12), (36_960, .15), (52_000, .185),
-                 (60_000, .205), (70_000, .23), (90_000, .24), (130_000, .25),
+# Escala autonómica de Aragón (AEAT, Manual práctico de Renta 2025)
+ESCALA_ARAGON = [(13_072.5, .095), (21_210, .12), (36_960, .15), (52_500, .185),
+                 (60_000, .205), (80_000, .23), (90_000, .24), (130_000, .25),
                  (float("inf"), .255)]
 
-# Cuotas de autónomos 2026 (prorrogadas de 2025) por rendimiento neto mensual
-TRAMOS_RETA = [(670, 200), (900, 220), (1_166.7, 260), (1_300, 291),
-               (1_500, 294), (1_700, 294), (1_850, 350), (2_030, 370),
-               (2_330, 390), (2_760, 415), (3_190, 440), (3_620, 465),
-               (4_050, 490), (6_000, 530), (float("inf"), 590)]
+# Cuotas de autónomos 2026: base mínima de cada tramo (Orden PJC/297/2026, iguales
+# a las de 2025) por el tipo total del 31,5 % (28,30 % comunes + 1,30 % profesionales
+# + 0,90 % cese de actividad + 0,10 % formación profesional + 0,90 % MEI)
+TIPO_RETA = 0.315
+BASES_RETA = [(670, 653.59), (900, 718.95), (1_166.7, 849.67), (1_300, 950.98),
+              (1_500, 960.78), (1_700, 960.78), (1_850, 1_143.79), (2_030, 1_209.15),
+              (2_330, 1_274.51), (2_760, 1_356.21), (3_190, 1_437.91), (3_620, 1_519.61),
+              (4_050, 1_601.31), (6_000, 1_732.03), (float("inf"), 1_928.10)]
+TRAMOS_RETA = [(limite, round(base * TIPO_RETA, 2)) for limite, base in BASES_RETA]
+
+# Inflación: los costes se actualizan con la previsión del Banco de España para 2027
+# (IAPC 3,7 %, proyecciones de octubre de 2026). Los precios de Flujo se mantienen
+# constantes en el escenario base, por prudencia.
+INFLACION_COSTES = 0.037
+INDEXAR_PRECIOS = False
 
 # --- Valoración --------------------------------------------------------------
 TASA_LIBRE_RIESGO = 0.034       # bono español a 10 años, julio de 2026

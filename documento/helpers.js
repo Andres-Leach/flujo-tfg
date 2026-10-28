@@ -72,7 +72,7 @@ function tabla(cabecera, filas, anchos, { numericas = true } = {}) {
   const total = anchos.reduce((a, b) => a + b, 0);
   const rows = [new TableRow({ tableHeader: true, children: cabecera.map((c, i) => celda(c, anchos[i], { cab: true, der: numericas && i > 0 })) })];
   filas.forEach((f, n) => {
-    const unir = n < filas.length - 1;
+    const unir = filas.length <= 18 ? n < filas.length - 1 : n < 2;
     const negrita = String(f[0]).startsWith("!");
     rows.push(new TableRow({
       cantSplit: true,

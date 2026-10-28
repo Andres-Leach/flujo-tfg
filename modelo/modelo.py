@@ -42,11 +42,12 @@ def cuota_prestamo(capital, tipo, n):
     return capital * i / (1 - (1 + i) ** -n)
 
 
-def simular(nombre="base", precio=None, tasa=None, factor_altas=None):
+def simular(nombre="base", precio=None, tasa=None, factor_altas=None, indexar_precios=None):
     e = dict(ESCENARIOS[nombre])
     if factor_altas is not None:
         e["altas"] = factor_altas
     precio = precio or H.PRECIO_SUSCRIPCION
+    e["indexar"] = H.INDEXAR_PRECIOS if indexar_precios is None else indexar_precios
     M = H.MESES
     m = {k: [0.0] * M for k in [
         "altas", "activos", "ing_setup", "ing_suscripcion", "ing_plantillas",
@@ -77,6 +78,8 @@ def _calcular(m, e, precio, reta_anual):
     M = H.MESES
     activos = 0.0
     for t in range(M):
+        ipc = (1 + H.INFLACION_COSTES) ** (t // 12)
+        ipp = ipc if e["indexar"] else 1.0
         cap = H.HORAS_DISPONIBLES[t]
         altas = H.ALTAS[t] * e["altas"]
         retenidos = activos * (1 - e["baja"])
@@ -86,22 +89,22 @@ def _calcular(m, e, precio, reta_anual):
         activos = retenidos + altas
         m["altas"][t], m["activos"][t] = altas, activos
         m["horas"][t] = activos * H.HORAS_CLIENTE_MES + altas * H.HORAS_SETUP
-        m["ing_setup"][t] = altas * H.PRECIO_SETUP
-        m["ing_suscripcion"][t] = activos * precio
-        m["ing_plantillas"][t] = H.UDS_PLANTILLAS[t] * e["productos"] * H.PRECIO_PLANTILLA
-        m["ing_cursos"][t] = H.UDS_CURSOS[t] * e["productos"] * H.PRECIO_CURSO
+        m["ing_setup"][t] = altas * H.PRECIO_SETUP * ipp
+        m["ing_suscripcion"][t] = activos * precio * ipp
+        m["ing_plantillas"][t] = H.UDS_PLANTILLAS[t] * e["productos"] * H.PRECIO_PLANTILLA * ipp
+        m["ing_cursos"][t] = H.UDS_CURSOS[t] * e["productos"] * H.PRECIO_CURSO * ipp
         usuarios = H.USUARIOS_APP[t] * e["app"]
         m["usuarios_app"][t] = usuarios
-        m["ing_app"][t] = usuarios * H.PRECIO_APP
+        m["ing_app"][t] = usuarios * H.PRECIO_APP * ipp
         servicio = m["ing_setup"][t] + m["ing_suscripcion"][t]
         productos = m["ing_plantillas"][t] + m["ing_cursos"][t]
         m["ingresos"][t] = servicio + productos + m["ing_app"][t]
         m["c_variables"][t] = (servicio * H.COMISION_COBRO + productos * H.COMISION_PLATAFORMA
-                               + usuarios * H.COSTE_VARIABLE_APP + m["ing_app"][t] * H.COMISION_COBRO)
-        m["c_fijos"][t] = sum(H.COSTES_FIJOS.values())
-        m["marketing"][t] = H.MARKETING[t]
+                               + usuarios * H.COSTE_VARIABLE_APP * ipc + m["ing_app"][t] * H.COMISION_COBRO)
+        m["c_fijos"][t] = sum(H.COSTES_FIJOS.values()) * ipc
+        m["marketing"][t] = H.MARKETING[t] * ipc
         m["reta"][t] = reta_anual[t // 12]
-        m["mant_app"][t] = H.MANTENIMIENTO_APP if t + 1 >= H.MES_LANZAMIENTO_APP else 0
+        m["mant_app"][t] = H.MANTENIMIENTO_APP * ipc if t + 1 >= H.MES_LANZAMIENTO_APP else 0
         m["puesta_marcha"][t] = H.GASTOS_PUESTA_EN_MARCHA if t == 0 else 0
 
     m["amortizacion"] = [0.0] * M
@@ -193,10 +196,12 @@ def tesoreria(m, A):
         servicio = m["ing_setup"][t] + m["ing_suscripcion"][t]
         ret = servicio * H.CUOTA_CLIENTES_RETENCION * H.RETENCION
         cobros = m["ingresos"][t] * (1 + H.IVA) - ret
-        gastos_iva = (sum(v for k, v in H.COSTES_FIJOS.items() if k in H.CON_IVA)
+        ipc = (1 + H.INFLACION_COSTES) ** (t // 12)
+        fijos_iva = sum(v for k, v in H.COSTES_FIJOS.items() if k in H.CON_IVA) * ipc
+        gastos_iva = (fijos_iva
                       + m["marketing"][t] + m["mant_app"][t] + m["puesta_marcha"][t]
                       + m["c_variables"][t])
-        gastos_sin_iva = m["c_fijos"][t] - sum(v for k, v in H.COSTES_FIJOS.items() if k in H.CON_IVA) + m["reta"][t]
+        gastos_sin_iva = m["c_fijos"][t] - fijos_iva + m["reta"][t]
         pagos = gastos_iva * (1 + H.IVA) + gastos_sin_iva + m["intereses"][t]
         inv = sum(imp for _, imp, mes, _, _ in H.INVERSIONES if mes == t + 1)
         iva_trim += (m["ingresos"][t] - gastos_iva - inv) * H.IVA
@@ -384,6 +389,8 @@ def sensibilidad():
     filas["precio"] = {p: simular("base", precio=p)["valoracion"]["van"] for p in (55, 65, 75, 85, 95)}
     filas["altas"] = {f: simular("base", factor_altas=f)["valoracion"]["van"] for f in (0.5, 0.75, 1.0, 1.25)}
     filas["tasa"] = {t: simular("base", tasa=t)["valoracion"]["van"] for t in (0.10, 0.15, 0.20, 0.30)}
+    r = simular("base", indexar_precios=True)["valoracion"]
+    filas["precios_indexados"] = {"van": r["van"], "van_oportunidad": r["van_oportunidad"]}
     return filas
 
 
