@@ -43,8 +43,8 @@ const portada = [
 ];
 
 // ---------------------------------------------------------- INFORMACIÓN Y RESUMEN
-const resumenEs = `Los jóvenes que trabajan por cuenta propia tienen que gestionar ingresos irregulares, impuestos trimestrales y gastos sin haber recibido, en la mayoría de los casos, formación financiera. La Encuesta de Competencias Financieras del Banco de España muestra que solo el 19 % de los adultos responde bien a las tres preguntas financieras básicas, y quince entrevistas exploratorias a autónomos de 20 a 35 años apuntan en la misma dirección. El objetivo de este trabajo es evaluar la viabilidad económico-financiera de Flujo, un proyecto que ofrecería organización financiera, educación práctica y, más adelante, una herramienta digital a este colectivo. Para ello se combinan fuentes secundarias, las entrevistas, el Business Model Canvas, un análisis de mercado y competencia, y un plan económico-financiero a tres años con tres escenarios. En el escenario base los ingresos pasan de ${eur(A.ingresos[0])} a ${eur(A.ingresos[2])}, el punto de equilibrio se sitúa en ${Math.ceil(B.pe[0])} clientes de suscripción y el VAN a tres años, descontado al ${pct(R.tasa, 0)}, es de ${eur(V.van)}. Sin embargo, cuando se descuenta el coste de oportunidad del emprendedor (un sueldo equivalente al SMI), el VAN baja a ${eur(V.van_oportunidad)} y pasa a ser negativo en el escenario pesimista. El proyecto es viable, pero su margen depende de la captación de clientes y de la capacidad de una sola persona, y la disposición real a pagar aún debe validarse con clientes.`;
-const resumenEn = `Young self-employed workers have to manage irregular income, quarterly taxes and expenses, usually without any financial training. The Bank of Spain's Financial Competences Survey shows that only 19% of adults answer the three basic financial questions correctly, and fifteen exploratory interviews with self-employed people aged 20 to 35 point in the same direction. This study assesses the economic and financial feasibility of Flujo, a project that would offer financial organisation, practical education and, later, a digital tool to this group. It combines secondary sources, the interviews, the Business Model Canvas, a market and competitor analysis and a three-year financial plan with three scenarios. In the base scenario revenue grows from ${eur(A.ingresos[0])} to ${eur(A.ingresos[2])}, break-even is reached with ${Math.ceil(B.pe[0])} subscription clients and the three-year NPV, discounted at ${pct(R.tasa, 0)}, is ${eur(V.van)}. Once the founder's opportunity cost (a salary equal to the Spanish minimum wage) is deducted, the NPV falls to ${eur(V.van_oportunidad)} and turns negative in the pessimistic scenario. The project is feasible, but its margin depends on client acquisition and on the capacity of a single person, and real willingness to pay still has to be validated with clients.`;
+const resumenEs = `Los jóvenes que trabajan por cuenta propia tienen que gestionar ingresos irregulares, impuestos trimestrales y gastos casi siempre sin formación financiera. La Encuesta de Competencias Financieras del Banco de España muestra que solo el 19 % de los adultos responde bien a las tres preguntas financieras básicas, y quince entrevistas exploratorias a autónomos de 20 a 35 años apuntan en la misma dirección. El objetivo de este trabajo es evaluar la viabilidad económico-financiera de Flujo, un proyecto que ofrecería organización financiera, educación práctica y, más adelante, una herramienta digital a este colectivo. Para ello se combinan fuentes oficiales, las entrevistas, el Business Model Canvas, un análisis de mercado y un plan económico-financiero a tres años con escenarios. En el escenario base los ingresos pasan de ${eur(A.ingresos[0])} a ${eur(A.ingresos[2])}, el punto de equilibrio se sitúa en ${Math.ceil(B.pe[0])} clientes de suscripción y el VAN a tres años, descontado al ${pct(R.tasa, 0)}, es de ${eur(V.van)}. Sin embargo, cuando se descuenta el coste de oportunidad del emprendedor (un sueldo equivalente al SMI), el VAN baja a ${eur(V.van_oportunidad)}. Cinco medidas de bajo coste orientadas a aumentar los ingresos por hora lo elevan a ${eur(R.palancas[R.palancas.length - 1].van_oportunidad)}, y en una simulación de Montecarlo la probabilidad de que el proyecto supere al empleo alternativo pasa del ${pct(R.montecarlo.p_van_op, 0)} al ${pct(R.montecarlo_opt.p_van_op, 0)}. El proyecto es viable, aunque depende de la captación de clientes y de la capacidad de una sola persona, y la disposición real a pagar aún debe validarse.`;
+const resumenEn = `Young self-employed workers have to manage irregular income, quarterly taxes and expenses, usually without any financial training. The Bank of Spain's Financial Competences Survey shows that only 19% of adults answer the three basic financial questions correctly, and fifteen exploratory interviews with self-employed people aged 20 to 35 point in the same direction. This study assesses the economic and financial feasibility of Flujo, a project that would offer financial organisation, practical education and, later, a digital tool to this group. It combines official sources, the interviews, the Business Model Canvas, a market analysis and a three-year financial plan with scenarios. In the base scenario revenue grows from ${eur(A.ingresos[0])} to ${eur(A.ingresos[2])}, break-even is reached with ${Math.ceil(B.pe[0])} subscription clients and the three-year NPV, discounted at ${pct(R.tasa, 0)}, is ${eur(V.van)}. Once the founder's opportunity cost (a salary equal to the Spanish minimum wage) is deducted, the NPV falls to ${eur(V.van_oportunidad)}. Five low-cost measures aimed at raising revenue per hour lift it to ${eur(R.palancas[R.palancas.length - 1].van_oportunidad)}, and in a Monte Carlo simulation the probability that the project beats the alternative job rises from ${pct(R.montecarlo.p_van_op, 0)} to ${pct(R.montecarlo_opt.p_van_op, 0)}. The project is feasible, although it depends on client acquisition and on the capacity of a single person, and real willingness to pay still has to be validated.`;
 const dato = (et, val) => new Paragraph({ spacing: { after: 60 }, children: [new TextRun({ text: et + ": ", bold: true }), new TextRun(val)] });
 const info = [
   dato("Autor del trabajo", "Andrés Leach Sagarra"),
@@ -82,6 +82,7 @@ const cap1 = [
     "Estimar la inversión inicial, la financiación necesaria, los ingresos y la estructura de costes.",
     "Elaborar la cuenta de resultados, el estado de flujos de tesorería y el balance previsionales a tres años.",
     "Calcular el VAN, la TIR, el periodo de recuperación y los principales ratios financieros.",
+    "Proponer y cuantificar medidas que mejoren la rentabilidad del proyecto.",
     "Analizar los riesgos del proyecto y su comportamiento en distintos escenarios.",
   ]),
   h2("1.3. Trascendencia del trabajo"),
@@ -90,12 +91,12 @@ const cap1 = [
   p(`El trabajo sigue un enfoque de estudio de caso con tres tipos de fuentes. Las **fuentes secundarias** proceden de organismos oficiales y entidades de referencia: Banco de España, Seguridad Social, Ministerio de Trabajo y Economía Social, Agencia Tributaria, Instituto Nacional de Estadística, Eurostat, OCDE, Observatorio del Emprendimiento de España y la Federación Nacional de Asociaciones de Trabajadores Autónomos (ATA). El Anexo IV resume qué dato se ha contrastado con cada fuente oficial. La **fuente primaria** son las quince entrevistas exploratorias semiestructuradas ya citadas (el guion se recoge en el Anexo III). Por último, el análisis se apoya en **herramientas de gestión** consolidadas: la metodología Lean Startup (Ries, 2011), el Business Model Canvas (Osterwalder y Pigneur, 2010), el análisis DAFO y los criterios clásicos de evaluación de inversiones (Brealey, Myers y Allen, 2020).`),
   p(`Las proyecciones financieras se han calculado mes a mes con un modelo propio programado en Python, que se entrega también en una hoja de cálculo. Todas las hipótesis se explican en el capítulo 6 y el código y los datos están disponibles en un repositorio público (ver Anexo II).`),
   h2("1.5. Estructura del trabajo"),
-  p(`Tras esta introducción, el capítulo 2 recoge el marco teórico: el concepto de start-up, el modelo de negocio, la educación financiera y los criterios de viabilidad y financiación. El capítulo 3 presenta la necesidad detectada y la propuesta de Flujo, y el capítulo 4 analiza el mercado, la competencia y el DAFO. El capítulo 5 trata los recursos necesarios y el marco legal y fiscal. Los capítulos 6, 7 y 8 forman el núcleo del trabajo: el plan económico-financiero, el análisis de viabilidad y rentabilidad, y el análisis de riesgos y escenarios. El capítulo 9 recoge las conclusiones y las limitaciones. Los anexos incluyen el análisis de datos de mercado, la nota sobre el modelo de cálculo, las entrevistas y la relación de fuentes oficiales consultadas.`),
+  p(`Tras esta introducción, el capítulo 2 recoge el marco teórico: el concepto de start-up, el modelo de negocio, la educación financiera y los criterios de viabilidad y financiación. El capítulo 3 presenta la necesidad detectada y la propuesta de Flujo, y el capítulo 4 analiza el mercado, la competencia y el DAFO. El capítulo 5 trata los recursos necesarios y el marco legal y fiscal. Los capítulos 6 a 9 forman el núcleo del trabajo: el plan económico-financiero, el análisis de viabilidad y rentabilidad, las medidas para mejorar esa rentabilidad y el análisis de riesgos y escenarios. El capítulo 10 recoge las conclusiones y las limitaciones. Los anexos incluyen el análisis de datos de mercado, la nota sobre el modelo de cálculo, las entrevistas y la relación de fuentes oficiales consultadas.`),
 ];
 
 // ---------------------------------------------------------- 2. MARCO TEÓRICO
 const cap2 = [
-  h1("2. Marco teórico"),
+  h1("2. Marco teórico", false),
   h2("2.1. La start-up y el enfoque Lean Startup"),
   p(`Ries (2011) define una start-up como una institución humana diseñada para crear un producto o servicio en condiciones de incertidumbre extrema. Lo que la distingue de una pequeña empresa tradicional no es su tamaño sino que todavía no sabe con certeza quién es su cliente ni cuánto está dispuesto a pagar. Blank (2013) lo resume diciendo que una start-up busca un modelo de negocio repetible y escalable, mientras que una empresa consolidada se limita a ejecutarlo.`),
   p(`De esa incertidumbre nace el enfoque Lean Startup, que propone sustituir los planes de negocio cerrados por ciclos cortos de construir, medir y aprender. La idea central es lanzar un producto mínimo viable, observar cómo responden los clientes y ajustar la propuesta antes de comprometer recursos importantes. Para un proyecto como Flujo, este enfoque tiene una consecuencia práctica: empezar como un servicio prestado de forma manual, que apenas requiere inversión, y dejar el desarrollo tecnológico para cuando exista evidencia de que hay clientes dispuestos a pagar.`),
@@ -133,7 +134,7 @@ const cap2 = [
 
 // ---------------------------------------------------------- 3. EL PROYECTO
 const cap3 = [
-  h1("3. El proyecto Flujo: necesidad detectada y propuesta"),
+  h1("3. El proyecto Flujo: necesidad detectada y propuesta", false),
   h2("3.1. La necesidad detectada"),
   p(`Las entrevistas exploratorias se hicieron a autónomos y *freelancers* de entre 20 y 35 años contactados a través de redes personales y comunidades profesionales: diseñadores, creadores de contenido, entrenadores personales, profesionales del marketing digital y otros perfiles creativos. Tres problemas se repitieron con frecuencia. El primero, no saber cuánto se gana realmente una vez descontados el IVA, el IRPF y la cuota de autónomos, algo que mencionaron más de la mitad de los entrevistados. El segundo, la mezcla entre las finanzas personales y las de la actividad, que impide saber qué parte de lo que hay en la cuenta puede gastarse. El tercero, la incertidumbre ante cada cierre trimestral, porque no se reserva de forma sistemática el dinero de los impuestos.`),
   p(`Los datos oficiales confirman que el problema va más allá de esta muestra. En la ECF, el índice de conocimientos básicos es del 52 % en el grupo de 18 a 34 años, frente al 56 % del grupo de 45 a 64 y una media nacional del 53 % (Banco de España, 2022). La diferencia no es muy grande, pero llega justo en la etapa en la que estos jóvenes empiezan a tomar decisiones económicas sin una nómina ni retenciones automáticas (ver Anexo I).`),
@@ -174,7 +175,7 @@ const cap3 = [
 // ---------------------------------------------------------- 4. MERCADO
 const tam = 0.161 * 3483645;
 const cap4 = [
-  h1("4. Análisis del mercado y del entorno"),
+  h1("4. Análisis del mercado y del entorno", false),
   h2("4.1. Tamaño y evolución del mercado"),
   p(`El RETA contaba con 3.483.645 afiliados medios en septiembre de 2026 (The Objective, 2026). Según el informe de ATA sobre el perfil del autónomo, los menores de 35 años representan el 16,1 % del total (Castilla y León Económica, 2026), lo que sitúa el mercado potencial de Flujo en torno a ${miles(Math.round(tam / 1000) * 1000)} personas. No todas serían clientes posibles, porque una parte ya tiene formación financiera o no está dispuesta a pagar por este tipo de servicio, pero la cifra sirve para poner en contexto el objetivo del plan: los ${r0(A.activos_fin[2])} clientes de suscripción previstos al final del año 3 equivalen a menos del 0,01 % de ese mercado. Para Flujo el tamaño del mercado no es una restricción; el límite está en la capacidad de captar y atender clientes.`),
   p(`La tendencia, sin embargo, no es favorable. El análisis de los datos de la Seguridad Social que se recoge en el Anexo I muestra que el colectivo autónomo está envejeciendo: los menores de 30 años son solo el 7 % del RETA, mientras que los mayores de 50 ya suponen el 47,2 % (Observatorio Español de la Economía Social y del Trabajo Autónomo, 2025), y el 73,1 % del crecimiento del RETA en 2025 se explica por autónomos mayores de 56 años (Emirodgar, 2026). La estadística oficial del Ministerio de Trabajo confirma esta estructura: en marzo de 2026 el tramo de 46 a 55 años concentraba el 31,5 % de los autónomos y el de 56 a 65 años el 23,9 % (Ministerio de Trabajo y Economía Social, 2026a), mientras que los jóvenes de 16 a 29 años eran 249.456, alrededor del 7 % del RETA (Ministerio de Trabajo y Economía Social, 2026b). En la comparación europea, los autónomos de 20 a 29 años son solo el 5,9 % del total en España, frente al 7,9 % de media en la Unión Europea, uno de los porcentajes más bajos de los Veintisiete (Eurostat, 2026).`),
@@ -192,7 +193,7 @@ const cap4 = [
     ["Flujo", "Sí (organización)", "Sí (personal)", "Sí (práctica)", "75 €/mes + 200 € de *setup*"],
   ], [2300, 1600, 1600, 1500, 2070], { numericas: false }),
   fuente("elaboración propia a partir de Billeo (2026) y de las webs de los competidores."),
-  p(`La comparación deja una conclusión que conviene no esconder: el precio de Flujo es superior al de una gestoría *online*, y un cliente que ya pague una gestoría tendría que asumir los dos costes. Por eso Flujo se posiciona como complemento de la gestoría y no como sustituto, y una línea de trabajo lógica es colaborar con gestorías que deriven a sus clientes jóvenes. El efecto de un precio más bajo se analiza en el capítulo 8.`),
+  p(`La comparación deja una conclusión que conviene no esconder: el precio de Flujo es superior al de una gestoría *online*, y un cliente que ya pague una gestoría tendría que asumir los dos costes. Por eso Flujo se posiciona como complemento de la gestoría y no como sustituto, y una línea de trabajo lógica es colaborar con gestorías que deriven a sus clientes jóvenes. El efecto de un precio más bajo se analiza en el capítulo 9.`),
   h2("4.3. Análisis DAFO"),
   p(`La Tabla 4.2 resume el diagnóstico interno y externo del proyecto.`),
   leyenda("Tabla", "4.2", "Análisis DAFO de Flujo"),
@@ -213,7 +214,7 @@ const cap4 = [
 
 // ------------------------------------------------- 5. RECURSOS Y MARCO LEGAL
 const cap5 = [
-  h1("5. Recursos, forma jurídica y aspectos legales"),
+  h1("5. Recursos, forma jurídica y aspectos legales", false),
   h2("5.1. Recursos necesarios y capacidad"),
   p(`En sus tres primeros años Flujo sería un proyecto unipersonal. El recurso principal es el tiempo del fundador, que durante el primer año compaginaría el proyecto con otra actividad (unas 60 horas de servicio al mes) y a partir del segundo se dedicaría a jornada completa (unas 120 horas de servicio, una vez descontado el tiempo de captación, contenido y administración). Cada cliente de suscripción requiere unas 2,5 horas al mes y cada alta unas 4 horas de diagnóstico y puesta en marcha. Con estas cifras, la capacidad máxima del servicio ronda los 45 clientes activos. Este límite es la razón de ser de las otras dos capas del modelo: las plantillas, los cursos y la herramienta digital permiten generar ingresos sin consumir horas por cliente.`),
   p(`Los recursos materiales son modestos: un ordenador, que se asume ya disponible; una página web con agenda y pasarela de pago; software de gestión, facturación y diseño; y, desde el año 2, un equipo básico de grabación para los cursos. El desarrollo de la herramienta digital se encargaría a un desarrollador externo en el año 3.`),
@@ -239,7 +240,7 @@ const cap5 = [
 const fijosMes = 40 + 30 + 10 + 25 + 40 + 25 + 25;
 const inv0 = V.inversion_inicial;
 const cap6 = [
-  h1("6. Plan económico-financiero"),
+  h1("6. Plan económico-financiero", false),
   p(`Este capítulo traduce el modelo de negocio a cifras para los tres primeros años de actividad (año 1 = 2027). Todas las cantidades se expresan sin IVA salvo en la tesorería, y se han calculado mes a mes. Las cifras son estimaciones razonadas, no datos de ventas reales, por lo que cada hipótesis se explica para que pueda revisarse cuando lleguen los primeros clientes.`, { keepNext: false }),
   h2("6.1. Hipótesis de partida"),
   leyenda("Tabla", "6.1", "Principales hipótesis del escenario base"),
@@ -269,7 +270,7 @@ const cap6 = [
     ["Desarrollo de la herramienta (MVP)", "Meses 25-30", eur(12000), "Microcrédito de 10.000 € y autofinanciación"],
   ], [3770, 1300, 1400, 2600], { numericas: false }),
   fuente("elaboración propia."),
-  p(`De acuerdo con la jerarquía financiera descrita en el capítulo 2, el arranque se financia íntegramente con 3.000 € de ahorros propios. El desarrollo de la herramienta digital, la única inversión relevante, se financiaría con un microcrédito de 10.000 € a cinco años y un tipo fijo del 7 %, en línea con las condiciones de MicroBank para emprendedores (Cámara de Comercio de Valencia, 2023), y con la caja generada por la actividad. Es un tipo superior a la TAE media de los nuevos créditos de hasta 250.000 € a sociedades no financieras, que el Banco de España situaba en el 4,58 % en enero de 2026 (Banco de España, 2026b), una diferencia lógica porque el microcrédito no exige garantías ni historial. En el escenario base el proyecto podría autofinanciar esa inversión, pero el préstamo se mantiene por prudencia: preserva un colchón de liquidez y, como se verá en el capítulo 8, sería imprescindible si la captación fuese más lenta. ENISA y los *business angels* no encajan en esta fase, porque exigen una sociedad mercantil y buscan crecimientos que un servicio unipersonal no ofrece; serían opciones a estudiar si la herramienta digital demostrara tracción.`),
+  p(`De acuerdo con la jerarquía financiera descrita en el capítulo 2, el arranque se financia íntegramente con 3.000 € de ahorros propios. El desarrollo de la herramienta digital, la única inversión relevante, se financiaría con un microcrédito de 10.000 € a cinco años y un tipo fijo del 7 %, en línea con las condiciones de MicroBank para emprendedores (Cámara de Comercio de Valencia, 2023), y con la caja generada por la actividad. Es un tipo superior a la TAE media de los nuevos créditos de hasta 250.000 € a sociedades no financieras, que el Banco de España situaba en el 4,58 % en enero de 2026 (Banco de España, 2026b), una diferencia lógica porque el microcrédito no exige garantías ni historial. En el escenario base el proyecto podría autofinanciar esa inversión, pero el préstamo se mantiene por prudencia: preserva un colchón de liquidez y, como se verá en el capítulo 9, sería imprescindible si la captación fuese más lenta. ENISA y los *business angels* no encajan en esta fase, porque exigen una sociedad mercantil y buscan crecimientos que un servicio unipersonal no ofrece; serían opciones a estudiar si la herramienta digital demostrara tracción.`),
   h2("6.3. Previsión de ingresos"),
   p(`Con estas hipótesis, los ingresos pasan de ${eur(A.ingresos[0])} en el año 1 a ${eur(A.ingresos[1])} en el año 2 y ${eur(A.ingresos[2])} en el año 3 (Tabla 6.3). El servicio de acompañamiento aporta la mayor parte durante todo el horizonte, mientras que los productos digitales y la herramienta ganan peso a partir del segundo año (Figura 6.1).`),
   leyenda("Tabla", "6.3", "Previsión de ingresos del escenario base (sin IVA)"),
@@ -284,11 +285,11 @@ const cap6 = [
   ], W4),
   fuente("elaboración propia."),
   leyenda("Figura", "6.1", "Composición de los ingresos por línea de negocio"),
-  imagen("fig_ingresos.png", 14),
+  imagen("fig_ingresos.png", 12),
   fuente("elaboración propia."),
   p(`La Figura 6.2 muestra un resultado que condiciona todo el plan: en el escenario base la cartera de clientes alcanza el límite de capacidad hacia el final del año 3, cuando se acerca a los 45 clientes activos. A partir de ese momento el servicio no puede crecer sin contratar o sin trasladar clientes a la herramienta digital, y el modelo frena las altas del año 3 de forma automática (se registran ${r0(A.altas[2])} en lugar de 36).`),
   leyenda("Figura", "6.2", "Clientes de suscripción activos y límite de capacidad"),
-  imagen("fig_clientes.png", 14),
+  imagen("fig_clientes.png", 12),
   fuente("elaboración propia."),
   h2("6.4. Estructura de costes y punto de equilibrio"),
   p(`Los costes fijos de explotación, sin contar la cuota de autónomos, suman ${eur(fijosMes)} al mes: herramientas de gestión y facturación (40 €), diseño y redes sociales (30 €), web y alojamiento (10 €), seguro de responsabilidad civil (25 €), asesor fiscal de apoyo (40 €), teléfono e internet (25 €) y formación (25 €). A ellos se añaden el marketing, que crece de 50 a 300 € al mes, la cuota de autónomos y, desde el lanzamiento de la herramienta, 150 € mensuales de mantenimiento. Los costes variables son las comisiones de cobro y de las plataformas, y el alojamiento de la herramienta. Todos los costes, salvo la cuota de autónomos, se actualizan un 3,7 % anual desde el segundo año, de acuerdo con la previsión de inflación del Banco de España para 2027 (Banco de España, 2026a), mientras que los precios de Flujo se mantienen constantes. Es una hipótesis prudente, porque la mayoría de servicios por suscripción actualizan sus tarifas.`),
@@ -368,9 +369,9 @@ const cap6 = [
 // ------------------------------------------------- 7. VIABILIDAD Y RENTABILIDAD
 const RAT = B.ratios;
 const cap7 = [
-  h1("7. Análisis de viabilidad y rentabilidad"),
+  h1("7. Análisis de viabilidad y rentabilidad", false),
   h2("7.1. Tasa de descuento"),
-  p(`La rentabilidad exigida al proyecto se ha estimado con el procedimiento descrito en el marco teórico (Tabla 7.1). Se parte de la rentabilidad del bono español a diez años, que rondaba el 3,4 % en julio de 2026 (VT Markets, 2026), y se añade una prima de mercado del 5,5 %, coherente con la prima implícita que estima Damodaran (2026) para un mercado maduro más un pequeño diferencial por riesgo país. Se toma una beta de 1, propia de un negocio de servicios profesionales sin deuda. El resultado, un 8,9 %, sería razonable para una empresa consolidada, pero no para un proyecto que todavía no tiene clientes, que no podría venderse con facilidad y que depende por completo de una persona. Por ello se añade una prima específica de 6,1 puntos, hasta una tasa del ${pct(R.tasa, 0)}. La elección es inevitablemente subjetiva, de modo que el capítulo 8 muestra cómo cambia el VAN con tasas de entre el 10 % y el 30 %.`),
+  p(`La rentabilidad exigida al proyecto se ha estimado con el procedimiento descrito en el marco teórico (Tabla 7.1). Se parte de la rentabilidad del bono español a diez años, que rondaba el 3,4 % en julio de 2026 (VT Markets, 2026), y se añade una prima de mercado del 5,5 %, coherente con la prima implícita que estima Damodaran (2026) para un mercado maduro más un pequeño diferencial por riesgo país. Se toma una beta de 1, propia de un negocio de servicios profesionales sin deuda. El resultado, un 8,9 %, sería razonable para una empresa consolidada, pero no para un proyecto que todavía no tiene clientes, que no podría venderse con facilidad y que depende por completo de una persona. Por ello se añade una prima específica de 6,1 puntos, hasta una tasa del ${pct(R.tasa, 0)}. La elección es inevitablemente subjetiva, de modo que el capítulo 9 muestra cómo cambia el VAN con tasas de entre el 10 % y el 30 %.`),
   leyenda("Tabla", "7.1", "Estimación de la tasa de descuento"),
   tabla(["Componente", "Valor"], [
     ["Rentabilidad sin riesgo (bono español a 10 años)", "3,4 %"],
@@ -411,13 +412,79 @@ const cap7 = [
   p(`El margen de seguridad del año 1, de apenas un ${pct(RAT[0].margen_seguridad, 0)}, indica que en ese ejercicio los ingresos por suscripción superan por poco a los que serían necesarios para cubrir los costes. El primer año es, por tanto, el más vulnerable.`),
 ];
 
-// ------------------------------------------------- 8. RIESGOS Y ESCENARIOS
+// ------------------------------------------------- 8. MEJORA DE LA RENTABILIDAD
+const UE = R.unit_economics, PAL = R.palancas, OPT = R.optimizado, MC = R.montecarlo, MCO = R.montecarlo_opt;
+const LIN = R.lineas, SL = R.sl;
+const capMejora = [
+  h1("8. Mejora de la rentabilidad del proyecto", false),
+  p(`El capítulo anterior concluye que Flujo es viable, pero con un margen estrecho una vez se tiene en cuenta el coste de oportunidad del fundador. Este capítulo busca dónde está el margen de mejora. Primero analiza la rentabilidad de cada cliente y de cada línea de negocio, después propone y cuantifica cinco medidas concretas y, por último, estudia si la forma jurídica elegida es la más eficiente.`),
+  h2("8.1. Economía unitaria del cliente"),
+  p(`En los negocios por suscripción es habitual comparar el valor que aporta un cliente durante toda su relación con la empresa (*lifetime value*, LTV) con lo que cuesta captarlo (*customer acquisition cost*, CAC). Con una baja mensual del 4 %, un cliente de Flujo permanece de media ${num(UE.vida_meses, 0)} meses y deja un margen de ${eur(UE.margen_mes, 2)} al mes, a lo que se suma el *setup*. Su LTV es, por tanto, de unos ${eur(UE.ltv)} (Tabla 8.1).`),
+  leyenda("Tabla", "8.1", "Valor del cliente y coste de captación (escenario base)"),
+  tabla(["Indicador", ...anios], [
+    ["Valor del cliente (LTV)", eur(UE.ltv), eur(UE.ltv), eur(UE.ltv)],
+    fila("Coste de captación por cliente (CAC)", UE.cac),
+    fila("Relación LTV / CAC", UE.ltv_cac, (x) => num(x, 1)),
+    fila("Meses de margen para recuperar el CAC", UE.recuperacion_cac_meses, (x) => num(x, 1)),
+  ], W4),
+  fuente("elaboración propia."),
+  p(`La relación LTV/CAC supera con creces el umbral de 3 que suele tomarse como referencia en negocios de suscripción, y el coste de captar un cliente se recupera en menos de dos meses. La lectura es clara: captar clientes no es caro. El cuello de botella de Flujo no es el marketing, sino las horas del fundador, que se agotan al final del año 3 (Figura 6.2). Por eso las medidas de mejora que siguen buscan, sobre todo, **aumentar los ingresos por hora trabajada** en lugar de captar más clientes.`),
+  h2("8.2. Rentabilidad por línea de negocio"),
+  p(`Para saber qué aporta cada capa del modelo se ha calculado el VAN incremental de cada una, es decir, la diferencia entre el plan completo y el mismo plan sin esa línea. Los productos digitales (plantillas y cursos) aportan ${eur(LIN.productos.van)} al VAN, porque generan ingresos sin consumir horas por cliente. La herramienta digital, en cambio, tiene un VAN incremental de ${eur(LIN.herramienta.van)} en el horizonte del plan: la inversión de 12.000 € se hace en el año 3 y apenas hay tiempo para recuperarla.`),
+  p(`Este resultado no significa que la herramienta deba descartarse. Su valor está fuera del horizonte de tres años, ya que es la única capa que permite crecer por encima del límite de capacidad del servicio. Se comporta como una opción real: conviene conservar la posibilidad de desarrollarla, pero al menor coste posible y solo cuando el servicio haya demostrado que hay demanda. Esa idea se recoge en la última de las medidas del apartado siguiente.`),
+  h2("8.3. Medidas de mejora"),
+  p(`Se proponen cinco medidas de bajo coste, coherentes con el diagnóstico anterior. Todas son hipótesis que deberían validarse, igual que las del plan base:`),
+  ...vinetas([
+    "**Actualizar los precios cada año con el IPC.** El plan base mantiene los precios constantes mientras los costes suben un 3,7 % al año; actualizar las tarifas es una práctica habitual en los servicios por suscripción.",
+    "**Estandarizar el servicio.** Con las plantillas y la rutina de revisión ya construidas, el tiempo por cliente puede bajar de 2,5 a 2 horas al mes desde el segundo año, lo que eleva la capacidad máxima de unos 45 a unos 55 clientes.",
+    "**Talleres grupales para instituciones.** Sesiones de dos horas sobre organización financiera para autónomos, ofrecidas a asociaciones de autónomos, coworkings, colegios profesionales, universidades o programas públicos de emprendimiento, a 250 € por sesión: una al mes en el año 2 y dos en el año 3. Cada taller ocupa unas 5 horas y genera más ingresos por hora que el servicio individual, además de servir como canal de captación.",
+    "**Acuerdo de derivación con gestorías.** Flujo no presenta impuestos, por lo que puede derivar a una gestoría colaboradora a los clientes que no tengan una, a cambio de una comisión de 60 € por cliente; se supone que el 30 % de las altas la necesita.",
+    "**Herramienta digital de bajo coste.** Desarrollar la primera versión con herramientas *no-code* por unos 5.000 € en lugar de un desarrollo a medida de 12.000 €, financiada con la caja generada y sin microcrédito.",
+  ]),
+  p(`La Tabla 8.2 muestra el efecto de aplicar las medidas de forma acumulada.`),
+  leyenda("Tabla", "8.2", "Efecto acumulado de las medidas de mejora"),
+  tabla(["Medida", "VAN", "VAN con coste de oportunidad", "Mejora"], PAL.map((f, i) => [
+    i === 0 ? "!Plan base" : f.palanca, eur(f.van), eur(f.van_oportunidad), i === 0 ? "—" : "+" + eur(f.delta_op),
+  ]).concat([["!Plan mejorado", eur(PAL[PAL.length - 1].van), eur(PAL[PAL.length - 1].van_oportunidad),
+    "+" + eur(PAL[PAL.length - 1].van_oportunidad - PAL[0].van_oportunidad)]]), [4470, 1400, 1800, 1400]),
+  fuente("elaboración propia."),
+  leyenda("Figura", "8.1", "Aportación de cada medida al VAN con coste de oportunidad"),
+  imagen("fig_palancas.png", 12),
+  fuente("elaboración propia."),
+  p(`En conjunto, las cinco medidas elevan el VAN a tres años de ${eur(PAL[0].van)} a ${eur(PAL[PAL.length - 1].van)} y, lo que es más importante, multiplican por ${num(PAL[PAL.length - 1].van_oportunidad / PAL[0].van_oportunidad, 1)} el VAN con coste de oportunidad, que pasa de ${eur(PAL[0].van_oportunidad)} a ${eur(PAL[PAL.length - 1].van_oportunidad)}. Las dos que más aportan son los talleres, porque aprovechan mejor las horas del fundador, y la herramienta de bajo coste, porque reduce una inversión que no se recupera dentro del horizonte. Ninguna exige una inversión adicional.`),
+  h2("8.4. El plan mejorado"),
+  p(`Con las cinco medidas, los ingresos pasan de ${eur(OPT.anual.ingresos[0])} en el año 1 a ${eur(OPT.anual.ingresos[1])} en el año 2 y ${eur(OPT.anual.ingresos[2])} en el año 3, y el resultado neto del año 3 alcanza ${eur(OPT.anual.resultado_neto[2])}. La cartera llega a ${num(OPT.anual.activos_fin[2], 0)} clientes de suscripción, de nuevo cerca del límite de capacidad (que ahora incluye las horas de los talleres), y la tesorería nunca baja de ${eur(OPT.anual.caja_min)}, sin necesidad de financiación ajena. El plan sigue siendo sensible a la captación: en el escenario pesimista el VAN con coste de oportunidad sería de ${eur(R.optimizado_pesimista.van_oportunidad)}, frente a ${eur(R.pesimista.valoracion.van_oportunidad)} del plan base, y en el optimista de ${eur(R.optimizado_optimista.van_oportunidad)}.`),
+  p(`Para valorar el riesgo de forma más completa que con tres escenarios cerrados se ha hecho una simulación de Montecarlo con ${miles(MC.n)} combinaciones aleatorias de las variables más inciertas: la captación de clientes (entre el 50 % y el 130 % de la prevista, con distribución triangular), la baja mensual (uniforme entre el 3 % y el 6 %) y las ventas de productos y de la herramienta (entre el 30 % y el 150 % de lo previsto). La Tabla 8.3 y la Figura 8.2 recogen los resultados.`),
+  leyenda("Tabla", "8.3", "Resultados de la simulación de Montecarlo"),
+  tabla(["Indicador", "Plan base", "Plan mejorado"], [
+    ["Probabilidad de VAN positivo", pct(MC.p_van, 0), pct(MCO.p_van, 0)],
+    ["Probabilidad de VAN con coste de oportunidad positivo", pct(MC.p_van_op, 0), pct(MCO.p_van_op, 0)],
+    ["VAN con coste de oportunidad: percentil 5", eur(MC.p5_op), eur(MCO.p5_op)],
+    ["VAN con coste de oportunidad: mediana", eur(MC.p50_op), eur(MCO.p50_op)],
+    ["VAN con coste de oportunidad: percentil 95", eur(MC.p95_op), eur(MCO.p95_op)],
+  ], [5070, 2000, 2000]),
+  fuente("elaboración propia."),
+  leyenda("Figura", "8.2", "Distribución del VAN con coste de oportunidad en la simulación"),
+  imagen("fig_montecarlo.png", 12),
+  fuente("elaboración propia."),
+  p(`El VAN es positivo en todas las simulaciones, tanto en el plan base como en el mejorado. La diferencia está en el coste de oportunidad: con el plan base, Flujo supera al empleo alternativo en el ${pct(MC.p_van_op, 0)} de los casos, prácticamente una moneda al aire; con el plan mejorado, en el ${pct(MCO.p_van_op, 0)}. Las medidas propuestas no solo aumentan la rentabilidad esperada, sino que reducen de forma notable la probabilidad de que el proyecto no compense el esfuerzo del fundador.`),
+  h2("8.5. Forma jurídica y fiscalidad"),
+  p(`El empresario individual es la forma más sencilla para arrancar, pero su tributación progresiva aumenta con los beneficios. La Tabla 8.4 compara la carga fiscal del año 3 con la que tendría una sociedad limitada que pagara un sueldo al fundador y tributara al 15 % por el resto, el tipo de las entidades de nueva creación (Agencia Tributaria, 2026a). Se añaden unos 1.200 € anuales de gestoría y obligaciones mercantiles y se supone una cuota de autónomo similar en ambos casos.`),
+  leyenda("Tabla", "8.4", "Carga fiscal anual: empresario individual frente a sociedad limitada"),
+  tabla(["Rendimiento y sueldo", "IRPF como autónomo", "Impuestos con SL", "Ahorro neto con SL"], SL.map((x) => [
+    `${eur(x.rendimiento)} con sueldo de ${eur(x.sueldo)}`, eur(x.irpf_autonomo), eur(x.impuestos_sl), eur(x.ahorro),
+  ]), [3670, 1800, 1800, 1800]),
+  fuente("elaboración propia a partir de las escalas del IRPF y de Agencia Tributaria (2026a). El ahorro descuenta 1.200 € de costes adicionales de la sociedad."),
+  p(`Con el rendimiento del año 3 del plan base, en torno a ${eur(SL[0].rendimiento)}, la sociedad ahorraría unos ${eur(SL[1].ahorro)} al año, pero a cambio de que una parte del beneficio quede retenida en ella; si se repartiera como dividendos tributaría de nuevo en el IRPF del ahorro, por lo que buena parte del ahorro sería un diferimiento. Con un rendimiento de 60.000 € el ahorro supera los ${eur(Math.floor(SL[3].ahorro / 1000) * 1000)}. La conclusión es que el empresario individual es la forma adecuada durante el horizonte del plan, y que la transformación en sociedad limitada tendría sentido a partir del cuarto año si el beneficio supera los 50.000 € o si se quiere reinvertir en la herramienta digital y acceder a ENISA.`),
+];
+
+// ------------------------------------------------- 9. RIESGOS Y ESCENARIOS
 const esc = ["pesimista", "base", "optimista"];
 const cap8 = [
-  h1("8. Análisis de riesgos y escenarios"),
-  h2("8.1. Escenarios"),
+  h1("9. Análisis de riesgos y escenarios", false),
+  h2("9.1. Escenarios"),
   p(`Para comprobar la solidez de los resultados se han construido dos escenarios alternativos. En el **pesimista** las altas de clientes son un 40 % inferiores a las del base, las bajas suben al 6 % mensual y las ventas de productos y usuarios de la herramienta se reducen a la mitad. En el **optimista** las altas aumentan un 30 %, las bajas bajan al 3 % y los productos y la herramienta venden un 30 % y un 50 % más, respectivamente. Los costes, la financiación y las retiradas del titular son los mismos en los tres casos, para que la comparación sea limpia.`),
-  leyenda("Tabla", "8.1", "Resultados por escenario"),
+  leyenda("Tabla", "9.1", "Resultados por escenario"),
   tabla(["Indicador", "Pesimista", "Base", "Optimista"], [
     ["Clientes activos al final del año 3", ...esc.map((e) => num(R[e].anual.activos_fin[2], 0))],
     ["Ingresos del año 3", ...esc.map((e) => eur(R[e].anual.ingresos[2]))],
@@ -428,19 +495,19 @@ const cap8 = [
     ["!VAN con coste de oportunidad", ...esc.map((e) => eur(R[e].valoracion.van_oportunidad))],
   ], W4),
   fuente("elaboración propia."),
-  p(`El VAN es positivo en los tres escenarios, incluso en el pesimista, lo que confirma que el proyecto, como inversión en dinero, tiene poco riesgo. La diferencia está en los otros dos indicadores. En el escenario pesimista la tesorería se vuelve negativa ya en el primer año y llega a un mínimo de ${eur(PE.anual.caja_min)} en el mes ${PE.anual.mes_caja_min} (Figura 8.1): el fundador no podría retirar lo previsto para vivir y tendría que mantener otra fuente de ingresos o retrasar el desarrollo de la herramienta. Además, el VAN con coste de oportunidad pasa a ${eur(PE.valoracion.van_oportunidad)}: con esa captación, Flujo rendiría menos que un empleo con el salario mínimo.`),
-  leyenda("Figura", "8.1", "Saldo mensual de tesorería por escenario"),
-  imagen("fig_tesoreria.png", 14),
+  p(`El VAN es positivo en los tres escenarios, incluso en el pesimista, lo que confirma que el proyecto, como inversión en dinero, tiene poco riesgo. La diferencia está en los otros dos indicadores. En el escenario pesimista la tesorería se vuelve negativa ya en el primer año y llega a un mínimo de ${eur(PE.anual.caja_min)} en el mes ${PE.anual.mes_caja_min} (Figura 9.1): el fundador no podría retirar lo previsto para vivir y tendría que mantener otra fuente de ingresos o retrasar el desarrollo de la herramienta. Además, el VAN con coste de oportunidad pasa a ${eur(PE.valoracion.van_oportunidad)}: con esa captación, Flujo rendiría menos que un empleo con el salario mínimo.`),
+  leyenda("Figura", "9.1", "Saldo mensual de tesorería por escenario"),
+  imagen("fig_tesoreria.png", 12),
   fuente("elaboración propia."),
   p(`En el escenario optimista, por el contrario, el límite de capacidad se alcanza ya en el año 2, lo que confirma que el crecimiento del servicio está acotado por las horas del fundador y no por la demanda.`),
-  h2("8.2. Análisis de sensibilidad"),
-  p(`La Figura 8.2 muestra cómo varía el VAN del escenario base al modificar, de una en una, las dos variables más inciertas. Una rebaja del precio de la suscripción a 55 €, cercana al de una gestoría *online*, reduciría el VAN a ${eur(R.sensibilidad.precio["55"])}, y una captación a la mitad de la prevista lo dejaría en ${eur(R.sensibilidad.altas["0.5"])}. El VAN se mantiene positivo en todos los casos. Respecto a la tasa de descuento, pasar del 10 % al 30 % lo reduce de ${eur(R.sensibilidad.tasa["0.1"])} a ${eur(R.sensibilidad.tasa["0.3"])}, una variación pequeña porque el horizonte es corto y la inversión, mínima. La captación de clientes es, por tanto, la variable crítica. Por último, si los precios de Flujo se actualizaran con la misma inflación que los costes, el VAN subiría a ${eur(R.sensibilidad.precios_indexados.van)} y el VAN con coste de oportunidad a ${eur(R.sensibilidad.precios_indexados.van_oportunidad)}.`),
-  leyenda("Figura", "8.2", "Sensibilidad del VAN al precio y a la captación de clientes"),
-  imagen("fig_sensibilidad.png", 14.5),
+  h2("9.2. Análisis de sensibilidad"),
+  p(`La Figura 9.2 muestra cómo varía el VAN del escenario base al modificar, de una en una, las dos variables más inciertas. Una rebaja del precio de la suscripción a 55 €, cercana al de una gestoría *online*, reduciría el VAN a ${eur(R.sensibilidad.precio["55"])}, y una captación a la mitad de la prevista lo dejaría en ${eur(R.sensibilidad.altas["0.5"])}. El VAN se mantiene positivo en todos los casos. Respecto a la tasa de descuento, pasar del 10 % al 30 % lo reduce de ${eur(R.sensibilidad.tasa["0.1"])} a ${eur(R.sensibilidad.tasa["0.3"])}, una variación pequeña porque el horizonte es corto y la inversión, mínima. La captación de clientes es, por tanto, la variable crítica. Por último, si los precios de Flujo se actualizaran con la misma inflación que los costes, el VAN subiría a ${eur(R.sensibilidad.precios_indexados.van)} y el VAN con coste de oportunidad a ${eur(R.sensibilidad.precios_indexados.van_oportunidad)}.`),
+  leyenda("Figura", "9.2", "Sensibilidad del VAN al precio y a la captación de clientes"),
+  imagen("fig_sensibilidad.png", 12),
   fuente("elaboración propia."),
-  h2("8.3. Principales riesgos y medidas de mitigación"),
-  p(`Los escenarios deben leerse junto con un dato de contexto: según la Demografía Armonizada de Empresas del INE, de media el 45,3 % de las empresas nacidas en España entre 2011 y 2022 desapareció en sus tres primeros años, y solo el 41,9 % de las nacidas en 2018 seguía activa cinco años después (INE, 2025). El primer año es el de mayor mortalidad. Un VAN positivo no elimina, por tanto, el riesgo de fracaso, y la Tabla 8.2 recoge los principales riesgos identificados y las medidas para reducirlos.`),
-  leyenda("Tabla", "8.2", "Matriz de riesgos del proyecto"),
+  h2("9.3. Principales riesgos y medidas de mitigación"),
+  p(`Los escenarios deben leerse junto con un dato de contexto: según la Demografía Armonizada de Empresas del INE, de media el 45,3 % de las empresas nacidas en España entre 2011 y 2022 desapareció en sus tres primeros años, y solo el 41,9 % de las nacidas en 2018 seguía activa cinco años después (INE, 2025). El primer año es el de mayor mortalidad. Un VAN positivo no elimina, por tanto, el riesgo de fracaso, y la Tabla 9.2 recoge los principales riesgos identificados y las medidas para reducirlos.`),
+  leyenda("Tabla", "9.2", "Matriz de riesgos del proyecto"),
   tabla(["Riesgo", "Probabilidad", "Impacto", "Medida de mitigación"], [
     ["Captación más lenta de lo previsto", "Media", "Alto", "Validar antes de invertir; mantener ingresos alternativos el primer año"],
     ["Precio percibido como alto frente a gestorías", "Media", "Medio", "Posicionarse como complemento; acuerdos con gestorías; plan reducido"],
@@ -456,17 +523,18 @@ const cap8 = [
 
 // ------------------------------------------------- 9. CONCLUSIONES
 const cap9 = [
-  h1("9. Conclusiones"),
-  h2("9.1. Conclusiones generales y específicas"),
+  h1("10. Conclusiones", false),
+  h2("10.1. Conclusiones generales y específicas"),
   p(`Este trabajo se planteaba si sería viable un proyecto dedicado a mejorar la gestión financiera de los autónomos jóvenes. La respuesta, con las hipótesis utilizadas, es afirmativa, aunque con matices importantes.`),
   p(`En primer lugar, **la necesidad existe y está documentada**. Los datos del Banco de España muestran un nivel bajo de conocimientos financieros en la población adulta, algo peor entre los jóvenes, y las quince entrevistas realizadas apuntan a problemas muy concretos: no saber cuánto se gana, mezclar las finanzas personales y las de la actividad y no reservar para los impuestos. El segmento de autónomos menores de 35 años, de unas 560.000 personas, es más que suficiente para un proyecto de este tamaño, aunque pierde peso dentro del colectivo.`),
   p(`En segundo lugar, **el proyecto es económica y financieramente viable**. La inversión inicial es de solo 3.000 €, el punto de equilibrio del primer año se sitúa en unos ${Math.ceil(B.pe[0])} clientes de suscripción y, en el escenario base, la actividad genera un beneficio acumulado de ${eur(sum(A.resultado_neto))} en tres años. El VAN es positivo en los tres escenarios analizados y el balance y la tesorería son coherentes con la cuenta de resultados.`),
   p(`En tercer lugar, **la viabilidad es menos holgada de lo que sugieren la TIR y el payback**. Cuando se incluye el coste de oportunidad del fundador, el VAN del escenario base se reduce a ${eur(V.van_oportunidad)} y pasa a ser negativo en el pesimista. Además, el servicio alcanza el límite de capacidad de una persona al final del tercer año. El éxito del proyecto depende, por tanto, de dos factores: captar clientes al ritmo previsto y conseguir que los productos digitales y la herramienta crezcan sin consumir horas por cliente.`),
-  p(`En cuarto lugar, **el entorno juega a favor en el corto plazo**. La factura electrónica obligatoria y Verifactu obligarán a los autónomos a revisar cómo facturan y controlan sus números entre 2027 y 2029, justo en el horizonte del plan, y la educación financiera es una prioridad institucional reconocida. En sentido contrario, la estadística del INE recuerda que casi la mitad de las empresas nuevas desaparece en sus tres primeros años, lo que obliga a leer los resultados con prudencia.`),
-  p(`Estas conclusiones responden a los objetivos planteados en la introducción: se ha descrito el colectivo y sus dificultades (capítulos 3 y 4), se ha definido el modelo de negocio (capítulo 3), se han analizado el mercado, la competencia y el marco legal (capítulos 4 y 5), se han elaborado los estados financieros previsionales a tres años (capítulo 6), se han calculado los criterios de rentabilidad y los ratios (capítulo 7) y se han estudiado los riesgos y escenarios (capítulo 8).`),
-  h2("9.2. Trascendencia de los resultados"),
+  p(`En cuarto lugar, **la rentabilidad puede mejorarse sin invertir más**. El análisis por cliente muestra que captar clientes es barato (la relación LTV/CAC supera 17 en todos los años) y que la restricción es el tiempo del fundador. Cinco medidas orientadas a aumentar los ingresos por hora (actualizar precios, estandarizar el servicio, ofrecer talleres a instituciones, colaborar con gestorías y abaratar la herramienta digital) elevan el VAN con coste de oportunidad de ${eur(PAL[0].van_oportunidad)} a ${eur(PAL[PAL.length - 1].van_oportunidad)}, y la simulación de Montecarlo sitúa en el ${pct(MCO.p_van_op, 0)} la probabilidad de que el proyecto compense el esfuerzo del fundador, frente al ${pct(MC.p_van_op, 0)} del plan base.`),
+  p(`En quinto lugar, **el entorno juega a favor en el corto plazo**. La factura electrónica obligatoria y Verifactu obligarán a los autónomos a revisar cómo facturan y controlan sus números entre 2027 y 2029, justo en el horizonte del plan, y la educación financiera es una prioridad institucional reconocida. En sentido contrario, la estadística del INE recuerda que casi la mitad de las empresas nuevas desaparece en sus tres primeros años, lo que obliga a leer los resultados con prudencia.`),
+  p(`Estas conclusiones responden a los objetivos planteados en la introducción: se ha descrito el colectivo y sus dificultades (capítulos 3 y 4), se ha definido el modelo de negocio (capítulo 3), se han analizado el mercado, la competencia y el marco legal (capítulos 4 y 5), se han elaborado los estados financieros previsionales a tres años (capítulo 6), se han calculado los criterios de rentabilidad y los ratios (capítulo 7), se han cuantificado las medidas de mejora (capítulo 8) y se han estudiado los riesgos y escenarios (capítulo 9).`),
+  h2("10.2. Trascendencia de los resultados"),
   p(`Para un emprendedor, el principal valor del trabajo es que convierte una idea en un conjunto de hipótesis medibles: cuántos clientes hacen falta, cuánto tiempo consume cada uno y qué ocurre si el ritmo de captación es menor. El modelo, publicado en abierto, puede actualizarse con los datos reales de la validación. Desde un punto de vista más general, el trabajo muestra que la falta de educación financiera de los autónomos jóvenes es también una oportunidad de negocio, y que un servicio de bajo coste puede contribuir a un objetivo que las instituciones consideran prioritario.`),
-  h2("9.3. Limitaciones y líneas futuras"),
+  h2("10.3. Limitaciones y líneas futuras"),
   p(`El trabajo tiene varias limitaciones. Las entrevistas son pocas y no representativas, y no miden la disposición a pagar, que solo puede comprobarse vendiendo el servicio. Los datos de competencias financieras proceden de una encuesta de 2021-2022 y no ofrecen información específica sobre autónomos jóvenes. Las cuotas de autónomos de 2027 a 2029 no están aprobadas, y la tributación por IRPF depende de la situación personal del titular, que se ha simplificado. Por último, la tasa de descuento incluye una prima específica que es, inevitablemente, una estimación.`),
   p(`Como líneas futuras se proponen ejecutar el plan de validación de la Tabla 3.2, preferiblemente dentro de un programa como el Semillero de Ideas de Zaragoza Activa, y actualizar el modelo con los datos reales, explorar acuerdos con gestorías y estudiar la transformación en sociedad limitada si la herramienta digital alcanza suficientes usuarios, lo que abriría la puerta a la financiación de ENISA o de inversores privados.`),
 ];
@@ -646,7 +714,7 @@ const doc = new Document({
     { properties: { ...pagina, type: SectionType.NEXT_PAGE }, children: info },
     { properties: { ...pagina, type: SectionType.NEXT_PAGE, page: { ...pagina.page, pageNumbers: { start: 1, formatType: NumberFormat.DECIMAL } } },
       footers: { default: pie },
-      children: [...indice, ...cap1, ...cap2, ...cap3, ...cap4, ...cap5, ...cap6, ...cap7, ...cap8, ...cap9, ...biblio, ...anexos] },
+      children: [...indice, ...cap1, ...cap2, ...cap3, ...cap4, ...cap5, ...cap6, ...cap7, ...capMejora, ...cap8, ...cap9, ...biblio, ...anexos] },
   ],
 });
 

@@ -26,6 +26,7 @@ BAJA_MENSUAL = 0.04         # 4 % mensual ≈ 61 % de retención a doce meses
 
 # Capacidad del fundador: horas de servicio disponibles al mes
 HORAS_CLIENTE_MES = 2.5     # reunión mensual + revisión del sistema
+HORAS_CLIENTE_ANUAL = [HORAS_CLIENTE_MES] * 3   # se reduce si se estandariza el servicio
 HORAS_SETUP = 4             # diagnóstico y montaje inicial
 HORAS_DISPONIBLES = [60] * 12 + [120] * 24   # año 1 a media jornada
 
@@ -37,7 +38,15 @@ UDS_PLANTILLAS = [0] * 12 + rampa(5, 25, 12) + rampa(25, 40, 12)
 UDS_CURSOS = [0] * 12 + rampa(2, 10, 12) + rampa(10, 18, 12)
 COMISION_PLATAFORMA = 0.10  # pasarela de pago + plataforma de cursos
 
+# --- Palancas de mejora (desactivadas en el escenario base) -------------------
+TALLERES_MES = [0] * 36     # talleres grupales para instituciones y coworkings
+PRECIO_TALLER = 250         # € netos por sesión de 2 h
+HORAS_TALLER = 5            # preparación + impartición + desplazamiento
+TASA_DERIVACION = 0.0       # parte de las altas derivadas a una gestoría colaboradora
+COMISION_DERIVACION = 60    # € por cliente derivado (pago único)
+
 # --- Herramienta digital (SaaS), lanzamiento en el mes 31 --------------------
+APP_ACTIVA = True
 MES_LANZAMIENTO_APP = 31
 USUARIOS_APP = [0] * 30 + [15 + 12 * i for i in range(6)]
 COSTE_VARIABLE_APP = 1.5    # alojamiento y servicios por usuario y mes
@@ -67,12 +76,19 @@ CON_IVA = {
 
 # --- Inversión inicial y posteriores -----------------------------------------
 # (concepto, importe, mes de compra, vida útil en años, tipo)
-INVERSIONES = [
-    ("Página web con agenda y pagos", 350, 0, 3, "intangible"),
-    ("Registro de marca en la OEPM", 125, 0, 10, "intangible"),
-    ("Equipo de grabación para cursos", 450, 13, 4, "material"),
-] + [("Desarrollo de la herramienta (MVP)", DESARROLLO_APP / 6, m, 3, "intangible")
-     for m in range(25, 31)]
+def inversiones():
+    base = [
+        ("Página web con agenda y pagos", 350, 0, 3, "intangible"),
+        ("Registro de marca en la OEPM", 125, 0, 10, "intangible"),
+        ("Equipo de grabación para cursos", 450, 13, 4, "material"),
+    ]
+    if APP_ACTIVA:
+        base += [("Desarrollo de la herramienta (MVP)", DESARROLLO_APP / 6, m, 3, "intangible")
+                 for m in range(25, 31)]
+    return base
+
+
+INVERSIONES = inversiones()
 GASTOS_PUESTA_EN_MARCHA = 350   # logo y plantillas (150) + textos legales RGPD (200)
 
 # --- Financiación ------------------------------------------------------------

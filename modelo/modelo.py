@@ -3,6 +3,8 @@
 Uso:  python modelo.py      -> imprime el resumen y guarda resultados.json
 """
 import json
+import random
+from contextlib import contextmanager
 from pathlib import Path
 
 import hipotesis as H
@@ -12,6 +14,19 @@ ESCENARIOS = {
     "base": dict(altas=1.0, baja=H.BAJA_MENSUAL, productos=1.0, app=1.0),
     "optimista": dict(altas=1.3, baja=0.03, productos=1.3, app=1.5),
 }
+
+
+@contextmanager
+def con(**cambios):
+    """Aplica temporalmente cambios en las hipótesis (para escenarios y palancas)."""
+    previos = {k: getattr(H, k) for k in cambios}
+    for k, v in cambios.items():
+        setattr(H, k, v)
+    try:
+        yield
+    finally:
+        for k, v in previos.items():
+            setattr(H, k, v)
 
 
 def escala(base, tramos):
@@ -53,7 +68,7 @@ def simular(nombre="base", precio=None, tasa=None, factor_altas=None, indexar_pr
         "altas", "activos", "ing_setup", "ing_suscripcion", "ing_plantillas",
         "ing_cursos", "ing_app", "ingresos", "c_variables", "c_fijos",
         "marketing", "reta", "puesta_marcha", "mant_app", "amortizacion",
-        "intereses", "horas", "usuarios_app"]}
+        "intereses", "horas", "usuarios_app", "ing_talleres", "ing_derivacion"]}
 
     # Cuota de autónomos: tarifa plana el año 1; el año 2 se prorroga si el
     # rendimiento del año 1 no supera el SMI; el año 3 va por tramos.  El
@@ -80,37 +95,41 @@ def _calcular(m, e, precio, reta_anual):
     for t in range(M):
         ipc = (1 + H.INFLACION_COSTES) ** (t // 12)
         ipp = ipc if e["indexar"] else 1.0
-        cap = H.HORAS_DISPONIBLES[t]
+        hc = H.HORAS_CLIENTE_ANUAL[t // 12]
+        talleres = H.TALLERES_MES[t]
+        cap = H.HORAS_DISPONIBLES[t] - talleres * H.HORAS_TALLER
         altas = H.ALTAS[t] * e["altas"]
         retenidos = activos * (1 - e["baja"])
         # límite de capacidad: si no hay horas, no se aceptan más clientes
-        max_altas = max((cap - retenidos * H.HORAS_CLIENTE_MES) / (H.HORAS_CLIENTE_MES + H.HORAS_SETUP), 0)
+        max_altas = max((cap - retenidos * hc) / (hc + H.HORAS_SETUP), 0)
         altas = min(altas, max_altas)
         activos = retenidos + altas
         m["altas"][t], m["activos"][t] = altas, activos
-        m["horas"][t] = activos * H.HORAS_CLIENTE_MES + altas * H.HORAS_SETUP
+        m["horas"][t] = activos * hc + altas * H.HORAS_SETUP + talleres * H.HORAS_TALLER
+        m["ing_talleres"][t] = talleres * H.PRECIO_TALLER * ipp
+        m["ing_derivacion"][t] = altas * H.TASA_DERIVACION * H.COMISION_DERIVACION
         m["ing_setup"][t] = altas * H.PRECIO_SETUP * ipp
         m["ing_suscripcion"][t] = activos * precio * ipp
         m["ing_plantillas"][t] = H.UDS_PLANTILLAS[t] * e["productos"] * H.PRECIO_PLANTILLA * ipp
         m["ing_cursos"][t] = H.UDS_CURSOS[t] * e["productos"] * H.PRECIO_CURSO * ipp
-        usuarios = H.USUARIOS_APP[t] * e["app"]
+        usuarios = H.USUARIOS_APP[t] * e["app"] if H.APP_ACTIVA else 0
         m["usuarios_app"][t] = usuarios
         m["ing_app"][t] = usuarios * H.PRECIO_APP * ipp
         servicio = m["ing_setup"][t] + m["ing_suscripcion"][t]
         productos = m["ing_plantillas"][t] + m["ing_cursos"][t]
-        m["ingresos"][t] = servicio + productos + m["ing_app"][t]
+        m["ingresos"][t] = servicio + productos + m["ing_app"][t] + m["ing_talleres"][t] + m["ing_derivacion"][t]
         m["c_variables"][t] = (servicio * H.COMISION_COBRO + productos * H.COMISION_PLATAFORMA
                                + usuarios * H.COSTE_VARIABLE_APP * ipc + m["ing_app"][t] * H.COMISION_COBRO)
         m["c_fijos"][t] = sum(H.COSTES_FIJOS.values()) * ipc
         m["marketing"][t] = H.MARKETING[t] * ipc
         m["reta"][t] = reta_anual[t // 12]
-        m["mant_app"][t] = H.MANTENIMIENTO_APP * ipc if t + 1 >= H.MES_LANZAMIENTO_APP else 0
+        m["mant_app"][t] = H.MANTENIMIENTO_APP * ipc if H.APP_ACTIVA and t + 1 >= H.MES_LANZAMIENTO_APP else 0
         m["puesta_marcha"][t] = H.GASTOS_PUESTA_EN_MARCHA if t == 0 else 0
 
     m["amortizacion"] = [0.0] * M
     m["intereses"] = [0.0] * M
     # amortizaciones (lineales, desde el mes siguiente a la compra; el MVP desde el lanzamiento)
-    for concepto, importe, mes, vida, _ in H.INVERSIONES:
+    for concepto, importe, mes, vida, _ in H.inversiones():
         inicio = H.MES_LANZAMIENTO_APP - 1 if "MVP" in concepto else max(mes, 0)
         for t in range(inicio, M):
             m["amortizacion"][t] += importe / (vida * 12)
@@ -148,6 +167,7 @@ def suma(lista, a):
 def resumen_anual(m):
     A = {}
     for k in ["altas", "ing_setup", "ing_suscripcion", "ing_plantillas", "ing_cursos", "ing_app",
+              "ing_talleres", "ing_derivacion",
               "ingresos", "c_variables", "c_fijos", "marketing", "reta", "puesta_marcha",
               "mant_app", "amortizacion", "intereses"]:
         A[k] = [suma(m[k], a) for a in range(3)]
@@ -176,7 +196,7 @@ def tesoreria(m, A):
     M = H.MESES
     caja = H.APORTACION_INICIAL
     inv_mes = [0.0] * (M + 1)
-    for _, importe, mes, _, _ in H.INVERSIONES:
+    for _, importe, mes, _, _ in H.inversiones():
         inv_mes[mes] += importe
     caja -= inv_mes[0] * (1 + H.IVA)          # IVA de la inversión inicial
     iva_soportado_ini = inv_mes[0] * H.IVA
@@ -203,7 +223,7 @@ def tesoreria(m, A):
                       + m["c_variables"][t])
         gastos_sin_iva = m["c_fijos"][t] - fijos_iva + m["reta"][t]
         pagos = gastos_iva * (1 + H.IVA) + gastos_sin_iva + m["intereses"][t]
-        inv = sum(imp for _, imp, mes, _, _ in H.INVERSIONES if mes == t + 1)
+        inv = sum(imp for _, imp, mes, _, _ in H.inversiones() if mes == t + 1)
         iva_trim += (m["ingresos"][t] - gastos_iva - inv) * H.IVA
         caja += cobros - pagos - inv * (1 + H.IVA) - m_retirada(t)
         flujo["cobros_explotacion"][a] += cobros
@@ -261,7 +281,7 @@ def balance(res):
     inmov_bruto = {"intangible": [0.0] * 3, "material": [0.0] * 3}
     amort_acum = [0.0] * 3
     for a in range(3):
-        for _, imp, mes, _, tipo in H.INVERSIONES:
+        for _, imp, mes, _, tipo in H.inversiones():
             if mes <= a * 12 + 12:
                 inmov_bruto[tipo][a] += imp
         amort_acum[a] = sum(A["amortizacion"][:a + 1])
@@ -309,9 +329,9 @@ def _amort_prox(a):
 
 def valorar(res, tasa):
     A = res["anual"]
-    inv0 = sum(imp for _, imp, mes, _, _ in H.INVERSIONES if mes == 0) + H.GASTOS_PUESTA_EN_MARCHA
-    fondo_maniobra = H.APORTACION_INICIAL - inv0 - sum(i * H.IVA for _, i, mes, _, _ in H.INVERSIONES if mes == 0)
-    inv_anual = [sum(imp for _, imp, mes, _, _ in H.INVERSIONES if a * 12 < mes <= (a + 1) * 12) for a in range(3)]
+    inv0 = sum(imp for _, imp, mes, _, _ in H.inversiones() if mes == 0) + H.GASTOS_PUESTA_EN_MARCHA
+    fondo_maniobra = H.APORTACION_INICIAL - inv0 - sum(i * H.IVA for _, i, mes, _, _ in H.inversiones() if mes == 0)
+    inv_anual = [sum(imp for _, imp, mes, _, _ in H.inversiones() if a * 12 < mes <= (a + 1) * 12) for a in range(3)]
     # NOF: saldos con Hacienda que financian la actividad (IVA e IRPF pendientes)
     nof = [-(A["iva_pendiente_fin"][a] + A["hp_irpf_fin"][a]) for a in range(3)]
     var_nof = [nof[0]] + [nof[a] - nof[a - 1] for a in (1, 2)]
@@ -394,6 +414,102 @@ def sensibilidad():
     return filas
 
 
+# ---------------------------------------------------------------- mejora de la rentabilidad
+PALANCAS = [
+    ("Actualización anual de precios con el IPC", dict(INDEXAR_PRECIOS=True)),
+    ("Estandarización del servicio (2 h por cliente desde el año 2)",
+     dict(HORAS_CLIENTE_ANUAL=[2.5, 2.0, 2.0])),
+    ("Talleres grupales para instituciones (1 al mes en el año 2 y 2 en el año 3)",
+     dict(TALLERES_MES=[0] * 12 + [1] * 12 + [2] * 12)),
+    ("Acuerdo de derivación con gestorías (30 % de las altas)", dict(TASA_DERIVACION=0.3)),
+    ("Herramienta no-code de 5.000 € sin microcrédito", dict(DESARROLLO_APP=5_000, PRESTAMO=0)),
+]
+
+
+def resumen(r):
+    v, A = r["valoracion"], r["anual"]
+    return dict(van=v["van"], van_oportunidad=v["van_oportunidad"], tir_oportunidad=v["tir_oportunidad"],
+                ingresos=A["ingresos"], resultado_neto=A["resultado_neto"], activos_fin=A["activos_fin"],
+                caja_min=A["caja_min"], horas_max=A["horas_max"], flujos=v["flujos"])
+
+
+def palancas():
+    """Aplica las palancas de forma acumulada y mide la aportación de cada una al VAN."""
+    filas, cambios = [], {}
+    previo = resumen(simular("base"))
+    filas.append(dict(palanca="Escenario base", **previo, delta=0, delta_op=0))
+    for nombre, c in PALANCAS:
+        cambios.update(c)
+        with con(**cambios):
+            r = resumen(simular("base"))
+        filas.append(dict(palanca=nombre, **r, delta=r["van"] - previo["van"],
+                          delta_op=r["van_oportunidad"] - previo["van_oportunidad"]))
+        previo = r
+    return filas, dict(cambios)
+
+
+def lineas_negocio():
+    """VAN incremental de cada línea: diferencia entre el plan con y sin ella."""
+    base = resumen(simular("base"))
+    out = {}
+    with con(APP_ACTIVA=False, PRESTAMO=0):
+        sin_app = resumen(simular("base"))
+    out["herramienta"] = dict(van=base["van"] - sin_app["van"],
+                              van_op=base["van_oportunidad"] - sin_app["van_oportunidad"])
+    with con(UDS_PLANTILLAS=[0] * 36, UDS_CURSOS=[0] * 36,
+             INVERSIONES=None) if False else con(UDS_PLANTILLAS=[0] * 36, UDS_CURSOS=[0] * 36):
+        sin_prod = resumen(simular("base"))
+    out["productos"] = dict(van=base["van"] - sin_prod["van"],
+                            van_op=base["van_oportunidad"] - sin_prod["van_oportunidad"])
+    return out
+
+
+def unit_economics(res):
+    """Valor del cliente (LTV), coste de captación (CAC) y su relación."""
+    A = res["anual"]
+    margen_mes = H.PRECIO_SUSCRIPCION * (1 - H.COMISION_COBRO)
+    vida = 1 / H.BAJA_MENSUAL
+    ltv = margen_mes * vida + H.PRECIO_SETUP * (1 - H.COMISION_COBRO)
+    cac = [A["marketing"][a] / A["altas"][a] for a in range(3)]
+    return dict(margen_mes=margen_mes, vida_meses=vida, ltv=ltv, cac=cac,
+                ltv_cac=[ltv / c for c in cac], recuperacion_cac_meses=[c / margen_mes for c in cac])
+
+
+def montecarlo(n=2000, semilla=2027, cambios=None):
+    """Simulación con altas, bajas y ventas de productos inciertas."""
+    rnd = random.Random(semilla)
+    vans, vans_op = [], []
+    base = dict(ESCENARIOS["base"])
+    for _ in range(n):
+        ESCENARIOS["_mc"] = dict(altas=rnd.triangular(0.5, 1.3, 1.0), baja=rnd.uniform(0.03, 0.06),
+                                 productos=rnd.triangular(0.3, 1.5, 1.0), app=rnd.triangular(0.3, 1.5, 1.0))
+        with con(**(cambios or {})):
+            v = simular("_mc")["valoracion"]
+        vans.append(v["van"])
+        vans_op.append(v["van_oportunidad"])
+    ESCENARIOS.pop("_mc")
+    q = lambda xs, p: sorted(xs)[int(p * (len(xs) - 1))]
+    return dict(n=n, van=vans, van_op=vans_op,
+                p_van=sum(x > 0 for x in vans) / n, p_van_op=sum(x > 0 for x in vans_op) / n,
+                p5=q(vans, .05), p50=q(vans, .5), p95=q(vans, .95),
+                p5_op=q(vans_op, .05), p50_op=q(vans_op, .5), p95_op=q(vans_op, .95))
+
+
+def comparar_sl(rendimiento, sueldo):
+    """Carga fiscal anual: empresario individual frente a SL con sueldo al administrador.
+
+    Simplificación: en la SL el beneficio que no se paga como sueldo queda en la
+    sociedad y tributa al 15 % (entidad de nueva creación); la SL añade unos
+    1.200 € anuales de gestoría y la cuota de autónomo societario es similar.
+    """
+    a = irpf(rendimiento)
+    extra = 1_200
+    base_is = max(rendimiento - sueldo - extra, 0)
+    s = irpf(sueldo - min(sueldo * H.DIFICIL_JUSTIFICACION, 2_000)) + 0.15 * base_is
+    return dict(rendimiento=rendimiento, sueldo=sueldo, irpf_autonomo=a, impuestos_sl=s,
+                ahorro=a - s - extra, retenido_en_sociedad=base_is * 0.85)
+
+
 def main():
     salida = {}
     for nombre in ESCENARIOS:
@@ -405,6 +521,26 @@ def main():
                               pe=[punto_equilibrio(r, a) for a in range(3)],
                               pe_smi=[punto_equilibrio(r, a, H.SMI_ANUAL) for a in range(3)])
     salida["sensibilidad"] = sensibilidad()
+    filas, cambios = palancas()
+    salida["palancas"] = filas
+    with con(**cambios):
+        r = simular("base")
+        bal = balance(r)
+        salida["optimizado"] = dict(anual=r["anual"], balance=bal, ratios=ratios(r, bal),
+                                    valoracion=r["valoracion"], reta=r["reta_mensual"], mensual=r["mensual"],
+                                    pe=[punto_equilibrio(r, a) for a in range(3)])
+        for e in ("pesimista", "optimista"):
+            salida[f"optimizado_{e}"] = resumen(simular(e))
+    salida["lineas"] = lineas_negocio()
+    salida["unit_economics"] = unit_economics(simular("base"))
+    mc = montecarlo()
+    mc_opt = montecarlo(cambios=cambios)
+    salida["montecarlo"] = {k: v for k, v in mc.items() if k not in ("van", "van_op")}
+    salida["montecarlo_opt"] = {k: v for k, v in mc_opt.items() if k not in ("van", "van_op")}
+    salida["montecarlo_muestras"] = dict(base=mc["van_op"], opt=mc_opt["van_op"])
+    rn3 = salida["base"]["anual"]["rendimiento_neto"][2]
+    salida["sl"] = [comparar_sl(rn3, s) for s in (15_000, 20_000, 25_000)] + \
+                   [comparar_sl(60_000, s) for s in (25_000, 30_000)]
     salida["tasa"] = H.TASA_DESCUENTO
     Path(__file__).with_name("resultados.json").write_text(json.dumps(salida, indent=1, default=str))
     b = salida["base"]
@@ -419,6 +555,15 @@ def main():
               "cajamin", round(salida[n]["anual"]["caja_min"]))
     print("PE", [round(x, 1) for x in b["pe"]], "PE SMI", [round(x, 1) for x in b["pe_smi"]])
     print(salida["sensibilidad"])
+    for f in salida["palancas"]:
+        print(f"{f['palanca'][:60]:60} VAN {f['van']:8.0f} (+{f['delta']:6.0f})  VANop {f['van_oportunidad']:8.0f}"
+              f"  cli {f['activos_fin'][2]:5.1f} h {f['horas_max'][2]:5.0f} cajamin {f['caja_min']:7.0f}")
+    print("opt esc", {e: round(salida[f"optimizado_{e}"]["van_oportunidad"]) for e in ("pesimista", "optimista")})
+    print("lineas", salida["lineas"])
+    print("ue", salida["unit_economics"])
+    print("mc", salida["montecarlo"])
+    print("mc opt", salida["montecarlo_opt"])
+    print("sl", salida["sl"])
 
 
 if __name__ == "__main__":

@@ -155,6 +155,19 @@ def main():
     ws.append(["Tasa de descuento", R["tasa"]])
     ws.cell(ws.max_row, 2).number_format = PCT
 
+    hoja(wb, "Palancas de mejora", ["Medida (acumulada)", "VAN", "VAN con coste de oportunidad", "Mejora del VAN c.o."],
+         [[f["palanca"], f["van"], f["van_oportunidad"], f["delta_op"]] for f in R["palancas"]])
+    hoja(wb, "PyG plan mejorado", ["Cuenta de resultados", "Año 1", "Año 2", "Año 3"], pyg_filas(R["optimizado"]["anual"])
+         + [["Ingresos por talleres"] + R["optimizado"]["anual"]["ing_talleres"],
+            ["Ingresos por derivación a gestorías"] + R["optimizado"]["anual"]["ing_derivacion"]])
+    mc, mo = R["montecarlo"], R["montecarlo_opt"]
+    hoja(wb, "Montecarlo", ["Indicador", "Plan base", "Plan mejorado"], [
+        ["Probabilidad VAN > 0", mc["p_van"], mo["p_van"]],
+        ["Probabilidad VAN con coste de oportunidad > 0", mc["p_van_op"], mo["p_van_op"]],
+        ["VAN c.o. percentil 5", mc["p5_op"], mo["p5_op"]], ["VAN c.o. mediana", mc["p50_op"], mo["p50_op"]],
+        ["VAN c.o. percentil 95", mc["p95_op"], mo["p95_op"]]],
+         {"Probabilidad VAN > 0": PCT, "Probabilidad VAN con coste de oportunidad > 0": PCT})
+
     salida = RAIZ / "Modelo_financiero_Flujo.xlsx"
     wb.save(salida)
     print("guardado", salida)

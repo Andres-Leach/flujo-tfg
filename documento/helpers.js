@@ -29,6 +29,7 @@ const p = (texto, opts = {}) => new Paragraph({
 
 const h1 = (texto, pageBreakBefore = true) => new Paragraph({
   heading: HeadingLevel.HEADING_1, pageBreakBefore, children: [new TextRun(texto)],
+  spacing: pageBreakBefore ? undefined : { before: 480, after: 240 },
 });
 const h2 = (texto) => new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun(texto)] });
 const h3 = (texto) => new Paragraph({ heading: HeadingLevel.HEADING_3, children: [new TextRun(texto)] });

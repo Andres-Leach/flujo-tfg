@@ -130,3 +130,38 @@ for ax in axs:
     ax.set_ylim(0, 50000)
 guardar(fig, "fig_sensibilidad.png")
 print("gráficos generados en", FIG)
+
+# --- Mejora de la rentabilidad -------------------------------------------------
+P = R["palancas"]
+cortos = ["Base", "Precios\ncon IPC", "Estandari-\nzación", "Talleres", "Derivación\ngestorías", "Herramienta\nno-code", "Plan\nmejorado"]
+fig, ax = plt.subplots(figsize=(6.4, 3.2))
+acum = P[0]["van_oportunidad"]
+ax.bar(0, acum, color=GRIS, width=0.6)
+ax.text(0, acum + 400, f"{acum:,.0f} €".replace(",", "."), ha="center", fontsize=8, color=TINTA)
+for i, f in enumerate(P[1:], start=1):
+    ax.bar(i, f["delta_op"], bottom=acum, color=AGUA if f["delta_op"] >= 0 else NARANJA, width=0.6)
+    ax.text(i, acum + f["delta_op"] + 400, f"+{f['delta_op']:,.0f}".replace(",", "."), ha="center", fontsize=8, color=TINTA)
+    acum += f["delta_op"]
+ax.bar(len(P), acum, color=AZUL, width=0.6)
+ax.text(len(P), acum + 400, f"{acum:,.0f} €".replace(",", "."), ha="center", fontsize=8, color=TINTA)
+ax.set_xticks(range(len(cortos)))
+ax.set_xticklabels(cortos, fontsize=7.5)
+ax.yaxis.set_major_formatter(eur)
+ax.set_ylabel("VAN con coste de oportunidad")
+ax.set_ylim(0, acum * 1.15)
+ax.grid(axis="x", visible=False)
+guardar(fig, "fig_palancas.png")
+
+MC = R["montecarlo_muestras"]
+fig, ax = plt.subplots(figsize=(6.2, 3))
+bins = [x * 2500 for x in range(-12, 15)]
+ax.hist(MC["base"], bins=bins, color=GRIS, alpha=0.75, label="Plan base", edgecolor="white")
+ax.hist(MC["opt"], bins=bins, color=AZUL, alpha=0.75, label="Plan mejorado", edgecolor="white")
+ax.axvline(0, color=TINTA, lw=1)
+ax.xaxis.set_major_formatter(eur)
+ax.set_xlabel("VAN con coste de oportunidad (2.000 simulaciones)")
+ax.set_ylabel("Frecuencia")
+ax.legend(frameon=False, loc="upper left")
+ax.tick_params(axis="x", labelsize=8)
+guardar(fig, "fig_montecarlo.png")
+print("gráficos de mejora generados")
