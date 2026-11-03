@@ -42,13 +42,14 @@ const salto = () => new Paragraph({ children: [new PageBreak()] });
 
 function leyenda(tipo, numero, titulo) {
   return new Paragraph({
-    alignment: AlignmentType.LEFT, keepNext: true, spacing: { before: 120, after: 60, line: 240, lineRule: "auto", lineRule: "auto" },
+    style: tipo === "Tabla" ? "LeyendaTabla" : "LeyendaFigura",
+    alignment: AlignmentType.LEFT, keepNext: true, spacing: { before: 120, after: 60, line: 240, lineRule: "auto" },
     children: [new TextRun({ text: `${tipo} ${numero}: `, bold: true, size: 22 }),
       new TextRun({ text: titulo, size: 22 })],
   });
 }
 const fuente = (texto) => new Paragraph({
-  alignment: AlignmentType.LEFT, spacing: { before: 40, after: 200, line: 240, lineRule: "auto", lineRule: "auto" },
+  alignment: AlignmentType.LEFT, spacing: { before: 40, after: 200, line: 240, lineRule: "auto" },
   children: [new TextRun({ text: "Fuente: " + texto, italics: true, size: 20 })],
 });
 
@@ -62,7 +63,7 @@ function celda(texto, ancho, { cab = false, negrita = false, der = false, sombra
       : sombra ? { type: ShadingType.CLEAR, fill: sombra, color: "auto" } : undefined,
     margins: { top: 40, bottom: 40, left: 80, right: 80 },
     children: [new Paragraph({
-      alignment: der ? AlignmentType.RIGHT : AlignmentType.LEFT, keepNext: unir, keepLines: true, spacing: { before: 0, after: 0, line: 240, lineRule: "auto", lineRule: "auto" },
+      alignment: der ? AlignmentType.RIGHT : AlignmentType.LEFT, keepNext: unir, keepLines: true, spacing: { before: 0, after: 0, line: 240, lineRule: "auto" },
       children: runs(String(texto), { size: 20, bold: cab || negrita, font: FUENTE }),
     })],
   });
@@ -90,7 +91,7 @@ function imagen(fichero, anchoCm) {
   const w = buf.readUInt32BE(16), h = buf.readUInt32BE(20);
   const px = anchoCm * 37.8;
   return new Paragraph({
-    alignment: AlignmentType.CENTER, keepNext: true, spacing: { before: 60, after: 0, line: 240, lineRule: "auto", lineRule: "auto" },
+    alignment: AlignmentType.CENTER, keepNext: true, spacing: { before: 60, after: 0, line: 240, lineRule: "auto" },
     children: [new ImageRun({ type: "png", data: buf, transformation: { width: px, height: px * h / w } })],
   });
 }
