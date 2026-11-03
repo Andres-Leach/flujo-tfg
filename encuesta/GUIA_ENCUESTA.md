@@ -1,5 +1,7 @@
 # Guía de la encuesta del TFG
 
+**Enlace para compartir:** https://docs.google.com/forms/d/e/1FAIpQLSecTHUjiV4dEWECRdpd1_hL_OelT9GEsyCB3qt3yq8BkEEn9A/viewform
+
 ## 1. Crear el formulario (5 minutos)
 1. Entra en https://script.google.com con tu cuenta de Google y pulsa **Nuevo proyecto**.
 2. Borra el contenido, pega todo `crear_formulario.gs` y guarda.
@@ -19,7 +21,7 @@
 - Recuerda cada 4-5 días a quien te dijo que la compartiría.
 
 Mensaje de ejemplo:
-> Hola, soy Andrés y estoy haciendo mi TFG de ADE en la Universidad de Zaragoza sobre cómo gestionan su dinero los autónomos y freelancers jóvenes. Si tienes entre 20 y 35 años y trabajas por cuenta propia, me ayudaría mucho que respondieras esta encuesta anónima (5 minutos): [enlace]. ¡Y si puedes compartirla, mejor todavía! Gracias.
+> Hola, soy Andrés y estoy haciendo mi TFG de ADE en la Universidad de Zaragoza sobre cómo gestionan su dinero los autónomos y freelancers jóvenes. Si tienes entre 20 y 35 años y trabajas por cuenta propia, me ayudaría mucho que respondieras esta encuesta anónima (5 minutos): https://docs.google.com/forms/d/e/1FAIpQLSecTHUjiV4dEWECRdpd1_hL_OelT9GEsyCB3qt3yq8BkEEn9A/viewform. ¡Y si puedes compartirla, mejor todavía! Gracias.
 
 ## 4. Reglas para que los datos valgan
 - No respondas tú ni pidas a nadie que responda "por ayudar" si no cumple el perfil: los filtros están para eso.
