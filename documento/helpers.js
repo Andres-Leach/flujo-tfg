@@ -29,7 +29,7 @@ const p = (texto, opts = {}) => new Paragraph({
 
 const h1 = (texto, pageBreakBefore = true) => new Paragraph({
   heading: HeadingLevel.HEADING_1, pageBreakBefore, children: [new TextRun(texto)],
-  spacing: pageBreakBefore ? undefined : { before: 480, after: 240 },
+  spacing: { before: 0, after: 120 },
 });
 const h2 = (texto) => new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun(texto)] });
 const h3 = (texto) => new Paragraph({ heading: HeadingLevel.HEADING_3, children: [new TextRun(texto)] });
@@ -43,13 +43,12 @@ const salto = () => new Paragraph({ children: [new PageBreak()] });
 function leyenda(tipo, numero, titulo) {
   return new Paragraph({
     style: tipo === "Tabla" ? "LeyendaTabla" : "LeyendaFigura",
-    alignment: AlignmentType.LEFT, keepNext: true, spacing: { before: 120, after: 60, line: 240, lineRule: "auto" },
-    children: [new TextRun({ text: `${tipo} ${numero}: `, bold: true, size: 22 }),
-      new TextRun({ text: titulo, size: 22 })],
+    alignment: AlignmentType.LEFT, keepNext: true, spacing: { before: 0, after: 120, line: 360, lineRule: "auto" },
+    children: [new TextRun({ text: `${tipo} ${numero}: `, bold: true }), new TextRun({ text: titulo })],
   });
 }
 const fuente = (texto) => new Paragraph({
-  alignment: AlignmentType.LEFT, spacing: { before: 40, after: 200, line: 240, lineRule: "auto" },
+  alignment: AlignmentType.LEFT, spacing: { before: 0, after: 120, line: 240, lineRule: "auto" },
   children: [new TextRun({ text: "Fuente: " + texto, italics: true, size: 20 })],
 });
 
@@ -91,7 +90,7 @@ function imagen(fichero, anchoCm) {
   const w = buf.readUInt32BE(16), h = buf.readUInt32BE(20);
   const px = anchoCm * 37.8;
   return new Paragraph({
-    alignment: AlignmentType.CENTER, keepNext: true, spacing: { before: 60, after: 0, line: 240, lineRule: "auto" },
+    alignment: AlignmentType.CENTER, keepNext: true, spacing: { before: 0, after: 0, line: 240, lineRule: "auto" },
     children: [new ImageRun({ type: "png", data: buf, transformation: { width: px, height: px * h / w } })],
   });
 }

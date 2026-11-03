@@ -43,28 +43,28 @@ const portada = [
 ];
 
 // ---------------------------------------------------------- INFORMACIÓN Y RESUMEN
-const resumenEs = `Los jóvenes que trabajan por cuenta propia tienen que gestionar ingresos irregulares, impuestos trimestrales y gastos casi siempre sin formación financiera. La Encuesta de Competencias Financieras del Banco de España muestra que solo el 19 % de los adultos responde bien a las tres preguntas financieras básicas, y entre los ocupados hasta un 42 % reconoce tener conocimientos financieros bajos. El objetivo de este trabajo es evaluar la viabilidad económico-financiera de Flujo, un proyecto que ofrecería organización financiera, educación práctica y, más adelante, una herramienta digital a este colectivo. Para ello se combinan fuentes oficiales, una encuesta propia a [[N]] autónomos de 20 a 35 años, el Business Model Canvas, un análisis de mercado y un plan económico-financiero a tres años con escenarios. En el escenario base los ingresos pasan de ${eur(A.ingresos[0])} a ${eur(A.ingresos[2])}, el punto de equilibrio se sitúa en ${Math.ceil(B.pe[0])} clientes de suscripción y el VAN a tres años, descontado al ${pct(R.tasa, 0)}, es de ${eur(V.van)}. Sin embargo, cuando se descuenta el coste de oportunidad del emprendedor (un sueldo equivalente al SMI), el VAN baja a ${eur(V.van_oportunidad)}. Cinco medidas de bajo coste orientadas a aumentar los ingresos por hora lo elevan a ${eur(R.palancas[R.palancas.length - 1].van_oportunidad)}, y en una simulación de Montecarlo la probabilidad de que el proyecto supere al empleo alternativo pasa del ${pct(R.montecarlo.p_van_op, 0)} al ${pct(R.montecarlo_opt.p_van_op, 0)}. El proyecto es viable, aunque depende de la captación de clientes y de la capacidad de una sola persona, y la disposición real a pagar aún debe validarse.`;
-const resumenEn = `Young self-employed workers have to manage irregular income, quarterly taxes and expenses, usually without any financial training. The Bank of Spain's Financial Competences Survey shows that only 19% of adults answer the three basic financial questions correctly, and up to 42% of those in work report low financial knowledge. This study assesses the economic and financial feasibility of Flujo, a project that would offer financial organisation, practical education and, later, a digital tool to this group. It combines official sources, an original survey of [[N]] self-employed people aged 20 to 35, the Business Model Canvas, a market analysis and a three-year financial plan with scenarios. In the base scenario revenue grows from ${eur(A.ingresos[0])} to ${eur(A.ingresos[2])}, break-even is reached with ${Math.ceil(B.pe[0])} subscription clients and the three-year NPV, discounted at ${pct(R.tasa, 0)}, is ${eur(V.van)}. Once the founder's opportunity cost (a salary equal to the Spanish minimum wage) is deducted, the NPV falls to ${eur(V.van_oportunidad)}. Five low-cost measures aimed at raising revenue per hour lift it to ${eur(R.palancas[R.palancas.length - 1].van_oportunidad)}, and in a Monte Carlo simulation the probability that the project beats the alternative job rises from ${pct(R.montecarlo.p_van_op, 0)} to ${pct(R.montecarlo_opt.p_van_op, 0)}. The project is feasible, although it depends on client acquisition and on the capacity of a single person, and real willingness to pay still has to be validated.`;
-const dato = (et, val) => new Paragraph({ spacing: { after: 60 }, children: [new TextRun({ text: et + ": ", bold: true }), new TextRun(val)] });
+const resumenEs = `Los autónomos jóvenes gestionan ingresos irregulares e impuestos trimestrales casi siempre sin formación financiera: solo el 19 % de los adultos acierta las tres preguntas financieras básicas del Banco de España. Este trabajo evalúa la viabilidad económico-financiera de Flujo, un proyecto de organización y educación financiera para autónomos de 20 a 35 años. Combina fuentes oficiales, una encuesta propia y un plan financiero a tres años con escenarios. En el escenario base los ingresos pasan de ${eur(A.ingresos[0])} a ${eur(A.ingresos[2])}, el punto de equilibrio es de ${Math.ceil(B.pe[0])} clientes y el VAN, de ${eur(V.van)}; descontado el coste de oportunidad del fundador, baja a ${eur(V.van_oportunidad)}. Cinco medidas de bajo coste lo elevan a ${eur(R.palancas[R.palancas.length - 1].van_oportunidad)} y sitúan en el ${pct(R.montecarlo_opt.p_van_op, 0)} la probabilidad de superar al empleo alternativo. El proyecto es viable, aunque depende de la captación de clientes, y la disposición a pagar debe validarse.`;
+const resumenEn = `Young self-employed workers manage irregular income and quarterly taxes, usually without financial training: only 19% of adults answer the Bank of Spain's three basic financial questions correctly. This study assesses the economic and financial feasibility of Flujo, a financial organisation and education project for self-employed people aged 20 to 35. It combines official sources, an original survey and a three-year financial plan with scenarios. In the base scenario revenue grows from ${eur(A.ingresos[0])} to ${eur(A.ingresos[2])}, break-even is reached with ${Math.ceil(B.pe[0])} clients and the NPV is ${eur(V.van)}; after deducting the founder's opportunity cost it falls to ${eur(V.van_oportunidad)}. Five low-cost measures raise it to ${eur(R.palancas[R.palancas.length - 1].van_oportunidad)} and put at ${pct(R.montecarlo_opt.p_van_op, 0)} the probability of beating the alternative job. The project is feasible, although it depends on client acquisition, and willingness to pay must be validated.`;
+const dato = (et, val) => new Paragraph({ spacing: { before: 0, after: 120 }, children: [new TextRun({ text: et + ": ", bold: true }), new TextRun(val)] });
 const info = [
   dato("Autor del trabajo", "Andrés Leach Sagarra"),
   dato("Directora del trabajo", "Dra. Beatrice Boumda Ijang"),
   dato("Título del trabajo", "Viabilidad financiera de Flujo: una start-up de ayuda a jóvenes emprendedores"),
   dato("Title", "Financial feasibility of Flujo: a start-up supporting young entrepreneurs"),
   dato("Titulación", "Grado en Administración y Dirección de Empresas (Universidad de Zaragoza)"),
-  new Paragraph({ spacing: { before: 160, after: 60 }, children: [new TextRun({ text: "Resumen", bold: true })] }),
-  p(resumenEs, { spacing: { line: 276, lineRule: "auto", after: 80 }, run: { size: 22 } }),
-  new Paragraph({ spacing: { before: 120, after: 60 }, children: [new TextRun({ text: "Abstract", bold: true })] }),
-  p(resumenEn, { spacing: { line: 276, lineRule: "auto", after: 0 }, run: { size: 22 } }),
+  new Paragraph({ spacing: { before: 0, after: 120 }, children: [new TextRun({ text: "Resumen", bold: true })] }),
+  p(resumenEs),
+  new Paragraph({ spacing: { before: 0, after: 120 }, children: [new TextRun({ text: "Abstract", bold: true })] }),
+  p(resumenEn),
 ];
 
 // ------------------------------------------------------------------ ÍNDICE
 const indice = [
-  new Paragraph({ pageBreakBefore: true, spacing: { after: 240 }, children: [new TextRun({ text: "Índice", bold: true, size: 28 })] }),
+  new Paragraph({ pageBreakBefore: true, spacing: { before: 0, after: 120 }, children: [new TextRun({ text: "Índice", bold: true, size: 28 })] }),
   new TableOfContents("Índice", { hyperlink: true, headingStyleRange: "1-2" }),
-  new Paragraph({ pageBreakBefore: true, spacing: { after: 160 }, children: [new TextRun({ text: "Índice de tablas", bold: true, size: 28 })] }),
+  new Paragraph({ pageBreakBefore: true, spacing: { before: 0, after: 120 }, children: [new TextRun({ text: "Índice de tablas", bold: true, size: 28 })] }),
   new TableOfContents("Índice de tablas", { hyperlink: true, stylesWithLevels: [new StyleLevel("LeyendaTabla", 1)] }),
-  new Paragraph({ spacing: { before: 200, after: 160 }, children: [new TextRun({ text: "Índice de figuras", bold: true, size: 28 })] }),
+  new Paragraph({ pageBreakBefore: true, spacing: { before: 0, after: 120 }, children: [new TextRun({ text: "Índice de figuras", bold: true, size: 28 })] }),
   new TableOfContents("Índice de figuras", { hyperlink: true, stylesWithLevels: [new StyleLevel("LeyendaFigura", 1)] }),
 ];
 
@@ -547,7 +547,7 @@ const cap9 = [
 
 // ------------------------------------------------- BIBLIOGRAFÍA
 const ref = (t) => new Paragraph({
-  alignment: AlignmentType.LEFT, indent: { left: 567, hanging: 567 }, spacing: { after: 100, line: 240, lineRule: "auto" }, children: require("./helpers").runs(t, { size: 22 }),
+  alignment: AlignmentType.LEFT, indent: { left: 567, hanging: 567 }, spacing: { before: 0, after: 120, line: 360, lineRule: "auto" }, children: require("./helpers").runs(t),
 });
 const consulta = "[Consulta: 28/10/2026]";
 const biblio = [
@@ -708,15 +708,15 @@ const doc = new Document({
     default: { document: { run: { font: FUENTE, size: 24 }, paragraph: { spacing: { before: 0, after: 120, line: 360, lineRule: "auto", lineRule: "auto" } } } },
     paragraphStyles: [
       { id: "Heading1", name: "Heading 1", basedOn: "Normal", next: "Normal", quickFormat: true,
-        run: { font: FUENTE, size: 28, bold: true }, paragraph: { spacing: { before: 0, after: 240 }, outlineLevel: 0, keepNext: true } },
+        run: { font: FUENTE, size: 28, bold: true }, paragraph: { spacing: { before: 0, after: 120 }, outlineLevel: 0, keepNext: true } },
       { id: "Heading2", name: "Heading 2", basedOn: "Normal", next: "Normal", quickFormat: true,
-        run: { font: FUENTE, size: 24, bold: true }, paragraph: { spacing: { before: 240, after: 120 }, outlineLevel: 1, keepNext: true } },
-      { id: "TOC1", name: "toc 1", basedOn: "Normal", next: "Normal", paragraph: { spacing: { before: 0, after: 40, line: 276, lineRule: "auto" } } },
-      { id: "TOC2", name: "toc 2", basedOn: "Normal", next: "Normal", paragraph: { spacing: { before: 0, after: 40, line: 276, lineRule: "auto" }, indent: { left: 284 } } },
-      { id: "LeyendaTabla", name: "LeyendaTabla", basedOn: "Normal", next: "Normal", run: { font: FUENTE, size: 22 } },
-      { id: "LeyendaFigura", name: "LeyendaFigura", basedOn: "Normal", next: "Normal", run: { font: FUENTE, size: 22 } },
+        run: { font: FUENTE, size: 24, bold: true }, paragraph: { spacing: { before: 0, after: 120 }, outlineLevel: 1, keepNext: true } },
+      { id: "TOC1", name: "toc 1", basedOn: "Normal", next: "Normal", paragraph: { spacing: { before: 0, after: 120, line: 360, lineRule: "auto" } } },
+      { id: "TOC2", name: "toc 2", basedOn: "Normal", next: "Normal", paragraph: { spacing: { before: 0, after: 120, line: 360, lineRule: "auto" }, indent: { left: 284 } } },
+      { id: "LeyendaTabla", name: "LeyendaTabla", basedOn: "Normal", next: "Normal", run: { font: FUENTE, size: 24 } },
+      { id: "LeyendaFigura", name: "LeyendaFigura", basedOn: "Normal", next: "Normal", run: { font: FUENTE, size: 24 } },
       { id: "Heading3", name: "Heading 3", basedOn: "Normal", next: "Normal", quickFormat: true,
-        run: { font: FUENTE, size: 24, bold: true, italics: true }, paragraph: { spacing: { before: 120, after: 120 }, outlineLevel: 2, keepNext: true } },
+        run: { font: FUENTE, size: 24, bold: true, italics: true }, paragraph: { spacing: { before: 0, after: 120 }, outlineLevel: 2, keepNext: true } },
     ],
   },
   numbering: { config: [{ reference: "vinetas", levels: [{ level: 0, format: LevelFormat.BULLET, text: "•", alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: 567, hanging: 284 } } } }] }] },
