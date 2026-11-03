@@ -22,3 +22,7 @@ cd ../documento && node build.js
 ```
 
 Requisitos: Python 3 con `matplotlib` y `openpyxl`; Node.js con `docx`.
+
+## Encuesta
+
+`encuesta/` contiene el script que crea el formulario de Google Forms, la guía de difusión y el script de análisis de las respuestas.
