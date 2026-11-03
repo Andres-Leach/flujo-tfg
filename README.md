@@ -7,7 +7,7 @@ Código, datos y modelo financiero del Trabajo Fin de Grado *Viabilidad financie
 - `modelo/hipotesis.py`: todas las hipótesis del plan, con su justificación.
 - `modelo/modelo.py`: modelo mensual a 36 meses (PyG, tesorería con IVA e IRPF, balance, VAN, TIR, payback, ratios, escenarios y sensibilidad). Comprueba que el balance cuadra.
 - `modelo/graficos.py`: genera las figuras de `figuras/`.
-- `modelo/exportar_excel.py`: vuelca los resultados a `Modelo_financiero_Flujo.xlsx`.
+- `modelo/excel_formulas.py`: genera `Modelo_financiero_Flujo.xlsx` con fórmulas vivas (panel de escenario y medidas, PyG, tesorería, balance, VAN y TIR).
 - `datos/`: datos de mercado usados en el Anexo I, con la fuente de cada cifra.
 - `documento/`: script que genera el documento Word del TFG.
 
@@ -17,7 +17,7 @@ Código, datos y modelo financiero del Trabajo Fin de Grado *Viabilidad financie
 cd modelo
 python modelo.py
 python graficos.py
-python exportar_excel.py
+python excel_formulas.py
 cd ../documento && node build.js
 ```
 

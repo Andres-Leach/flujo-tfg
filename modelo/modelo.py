@@ -63,7 +63,7 @@ def neto_asalariado(bruto):
 
 
 def cuota_reta(rendimiento_anual):
-    mensual = max(rendimiento_anual, 0) * 0.93 / 12   # 7 % de deducción genérica
+    mensual = max(rendimiento_anual, 0) * 0.93 / 12   # rendimiento computable menos el 7 % genérico
     return next(c for limite, c in H.TRAMOS_RETA if mensual <= limite)
 
 
@@ -92,12 +92,16 @@ def simular(nombre="base", precio=None, tasa=None, factor_altas=None, indexar_pr
     for _ in range(10):
         res = _calcular(m, e, precio, reta_anual)
         rn = res["anual"]["rendimiento_neto"]
+        # Rendimiento computable para cotizar: rendimiento neto fiscal más las
+        # cuotas pagadas (art. 308 LGSS, redacción del RDL 13/2022)
+        comp = [rn[a] + 12 * reta_anual[a] for a in range(3)]
         nueva = [H.TARIFA_PLANA,
-                 H.TARIFA_PLANA if rn[0] < H.SMI_ANUAL else cuota_reta(rn[1]),
-                 cuota_reta(rn[2])]
+                 H.TARIFA_PLANA if comp[0] < H.SMI_ANUAL else cuota_reta(comp[1]),
+                 cuota_reta(comp[2])]
         if nueva == reta_anual:
             break
         reta_anual = nueva
+    assert nueva == reta_anual, "la cuota de autónomos no converge"
     res["reta_mensual"] = reta_anual
     res["valoracion"] = valorar(res, tasa or H.TASA_DESCUENTO)
     res["escenario"] = nombre
