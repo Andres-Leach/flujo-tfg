@@ -47,6 +47,21 @@ def irpf(rendimiento):
     return max(cuota - minimo, 0)
 
 
+def neto_asalariado(bruto):
+    """Sueldo neto de un asalariado: cotización del 6,5 % e IRPF con la reducción del art. 20 LIRPF."""
+    ss = bruto * 0.065
+    rn = bruto - ss
+    if rn <= 14_852:
+        red = 7_302
+    elif rn <= 17_673.52:
+        red = 7_302 - 1.75 * (rn - 14_852)
+    elif rn <= 19_747.5:
+        red = 2_364.34 - 1.14 * (rn - 17_673.52)
+    else:
+        red = 0
+    return bruto - ss - irpf(max(rn - 2_000 - red, 0))
+
+
 def cuota_reta(rendimiento_anual):
     mensual = max(rendimiento_anual, 0) * 0.93 / 12   # 7 % de deducción genérica
     return next(c for limite, c in H.TRAMOS_RETA if mensual <= limite)
@@ -344,12 +359,17 @@ def valorar(res, tasa):
     van_vr = van + vr / (1 + tasa) ** 3
     flujos_oport = [flujos[0]] + [fcl[a] - H.COSTE_OPORTUNIDAD[a] for a in range(3)]
     van_oport = sum(f / (1 + tasa) ** i for i, f in enumerate(flujos_oport))
+    neto_ine = neto_asalariado(H.SALARIO_INE_25_29)
+    oport_ine = [0.5 * neto_ine, neto_ine, neto_ine]
+    flujos_ine = [flujos[0]] + [fcl[a] - oport_ine[a] for a in range(3)]
+    van_ine = sum(f / (1 + tasa) ** i for i, f in enumerate(flujos_ine))
     return dict(tasa=tasa, inversion_inicial=inv0, fondo_maniobra=fondo_maniobra,
                 inversiones=inv_anual, var_nof=var_nof, fcl=fcl, flujos=flujos, van=van,
                 valor_residual=vr, van_con_vr=van_vr, tir=tir(flujos),
                 payback=payback(flujos), payback_desc=payback(flujos, tasa),
                 flujos_oportunidad=flujos_oport, van_oportunidad=van_oport,
-                tir_oportunidad=tir(flujos_oport))
+                tir_oportunidad=tir(flujos_oport), neto_ine=neto_ine, flujos_ine=flujos_ine,
+                van_ine=van_ine, tir_ine=tir(flujos_ine))
 
 
 def tir(flujos):
@@ -478,7 +498,7 @@ def unit_economics(res):
 def montecarlo(n=2000, semilla=2027, cambios=None):
     """Simulación con altas, bajas y ventas de productos inciertas."""
     rnd = random.Random(semilla)
-    vans, vans_op = [], []
+    vans, vans_op, vans_ine = [], [], []
     base = dict(ESCENARIOS["base"])
     for _ in range(n):
         ESCENARIOS["_mc"] = dict(altas=rnd.triangular(0.5, 1.3, 1.0), baja=rnd.uniform(0.03, 0.06),
@@ -487,12 +507,38 @@ def montecarlo(n=2000, semilla=2027, cambios=None):
             v = simular("_mc")["valoracion"]
         vans.append(v["van"])
         vans_op.append(v["van_oportunidad"])
+        vans_ine.append(v["van_ine"])
     ESCENARIOS.pop("_mc")
     q = lambda xs, p: sorted(xs)[int(p * (len(xs) - 1))]
-    return dict(n=n, van=vans, van_op=vans_op,
+    return dict(n=n, van=vans, van_op=vans_op, p_van_ine=sum(x > 0 for x in vans_ine) / n,
+                p50_ine=q(vans_ine, .5),
                 p_van=sum(x > 0 for x in vans) / n, p_van_op=sum(x > 0 for x in vans_op) / n,
                 p5=q(vans, .05), p50=q(vans, .5), p95=q(vans, .95),
                 p5_op=q(vans_op, .05), p50_op=q(vans_op, .5), p95_op=q(vans_op, .95))
+
+
+def valor_critico(f, lo, hi, n=40):
+    """Valor de x en [lo, hi] con f(x) = 0 (bisección); None si no cambia de signo."""
+    flo, fhi = f(lo), f(hi)
+    if flo * fhi > 0:
+        return None
+    for _ in range(n):
+        mid = (lo + hi) / 2
+        if f(lo) * f(mid) <= 0:
+            hi = mid
+        else:
+            lo = mid
+    return (lo + hi) / 2
+
+
+def valores_criticos(cambios=None):
+    """Precio y captación mínimos para que el VAN con coste de oportunidad sea cero."""
+    out = {}
+    with con(**(cambios or {})):
+        for clave in ("van_oportunidad", "van_ine"):
+            out[f"precio_{clave}"] = valor_critico(lambda p: simular("base", precio=p)["valoracion"][clave], 20, 200)
+            out[f"altas_{clave}"] = valor_critico(lambda f: simular("base", factor_altas=f)["valoracion"][clave], 0.2, 2.0)
+    return out
 
 
 def comparar_sl(rendimiento, sueldo):
@@ -532,6 +578,8 @@ def main():
         for e in ("pesimista", "optimista"):
             salida[f"optimizado_{e}"] = resumen(simular(e))
     salida["lineas"] = lineas_negocio()
+    salida["criticos"] = valores_criticos()
+    salida["criticos_opt"] = valores_criticos(cambios)
     salida["unit_economics"] = unit_economics(simular("base"))
     mc = montecarlo()
     mc_opt = montecarlo(cambios=cambios)
@@ -564,6 +612,10 @@ def main():
     print("mc", salida["montecarlo"])
     print("mc opt", salida["montecarlo_opt"])
     print("sl", salida["sl"])
+    print("criticos", salida["criticos"], salida["criticos_opt"])
+    v = salida["base"]["valoracion"]
+    print("ine neto", round(v["neto_ine"]), "VAN ine", round(v["van_ine"]), "opt", round(salida["optimizado"]["valoracion"]["van_ine"]),
+          "pesim", round(salida["pesimista"]["valoracion"]["van_ine"]))
 
 
 if __name__ == "__main__":

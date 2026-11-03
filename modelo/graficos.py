@@ -35,14 +35,14 @@ def leer(nombre):
 
 
 # --- Anexo: datos de mercado --------------------------------------------------
-edad = leer("reta_por_edad_2025.csv")
+edad = leer("reta_por_edad_2026.csv")
 fig, ax = plt.subplots(figsize=(6, 3))
-ax.barh([r["tramo"] for r in edad][::-1], [float(r["porcentaje"]) for r in edad][::-1],
-        color=[GRIS, GRIS, AZUL], height=0.55)
-for i, r in enumerate(edad[::-1]):
-    ax.text(float(r["porcentaje"]) + 1, i, f'{float(r["porcentaje"]):.1f} %'.replace(".", ","),
-            va="center", color=TINTA)
-ax.set_xlim(0, 60)
+etiquetas = [r["tramo"] for r in edad][::-1]
+valores = [float(r["porcentaje"]) for r in edad][::-1]
+ax.barh(etiquetas, valores, color=[AZUL if "16 a 29" in t else GRIS for t in etiquetas], height=0.55)
+for i, v in enumerate(valores):
+    ax.text(v + 1, i, f"{v:.1f} %".replace(".", ","), va="center", color=TINTA)
+ax.set_xlim(0, 45)
 ax.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, _: f"{x:.0f} %"))
 ax.grid(axis="y", visible=False)
 guardar(fig, "fig_anexo_reta_edad.png")
@@ -57,21 +57,6 @@ ax.set_ylim(0, 65)
 ax.set_ylabel("Aciertos medios (%)")
 ax.grid(axis="x", visible=False)
 guardar(fig, "fig_anexo_big3.png")
-
-crec = leer("crecimiento_reta_2025.csv")
-fig, ax = plt.subplots(figsize=(6, 2.4))
-izq = 0
-for r, c in zip(crec, [NARANJA, "#f3a582", GRIS]):
-    v = float(r["porcentaje"])
-    ax.barh([0], [v], left=izq, color=c, height=0.5, edgecolor="white", linewidth=2)
-    ax.text(izq + v / 2, 0, f'{r["grupo"]}\n{v:.1f} %'.replace(".", ","), ha="center", va="center",
-            color=TINTA, fontsize=9)
-    izq += v
-ax.set_xlim(0, 100)
-ax.set_yticks([])
-ax.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda x, _: f"{x:.0f} %"))
-ax.grid(False)
-guardar(fig, "fig_anexo_crecimiento.png")
 
 # --- Plan financiero ---------------------------------------------------------
 mb = R["base"]["mensual"]

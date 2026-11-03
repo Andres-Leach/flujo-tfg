@@ -39,3 +39,9 @@ Cada fuente, el dato que se ha contrastado y dónde se usa en el TFG. Los datos 
 | Ayuntamiento de Zaragoza | Semillero de Ideas: preincubación gratuita 6 meses | 5.1, 9.3 | https://www.zaragoza.es/semillerodeideas |
 | Biblioteca Unizar | Modelo oficial de portada TFG y depósito en DEPOSITA | portada | https://biblioteca.unizar.es/servicios/deposito-tfgtfm |
 | FECEM | Directrices de estructura y formato del TFG | todo | https://fecem.unizar.es/sites/fecem/files/users/normativa/Directrices%20TFG_firmado.pdf |
+| Tesoro Público | Obligaciones a 10 años: tipo medio 4,176 % (subasta 1/10/2026), rentabilidad sin riesgo | 7.1, modelo | https://www.tesoro.es/deuda-publica/subastas/resultados-subastas-anteriores/obligaciones-del-estado/subasta-de-394 |
+| INE | Encuesta de Estructura Salarial 2022: ganancia media de 25 a 29 años, 20.459,60 € | 7.3, modelo | https://www.ine.es/metodologia/t22/ees_prinre22.pdf |
+| Ministerio de Inclusión | Balance de afiliación de septiembre de 2026: 3.483.645 autónomos | 1.1, 4.1 | https://www.inclusion.gob.es/en/w/el-empleo-logra-el-mejor-septiembre-de-la-historia-despues-de-sumar-92.327-afiliados-en-el-ultimo-mes-y-739.888-respecto-a-hace-un-ano |
+| Ministerio de Trabajo | ENDITA 2022-2027: la franja de 25 a 39 años es la que más peso pierde | 4.1, Anexo I | https://www.mites.gob.es/ficheros/ministerio/inicio_destacados/ENDITA-2022-2027.pdf |
+
+Fuentes de prensa sustituidas por oficiales en esta versión: The Objective (afiliación), VT Markets (bono), Emirodgar y Observatorio Español de la Economía Social (edades). Se mantienen dos fuentes no oficiales, señaladas en el texto: Billeo (precios de gestorías) y Castilla y León Económica (dato de ATA del 16,1 % de menores de 35 años).

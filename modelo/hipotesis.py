@@ -135,11 +135,14 @@ INFLACION_COSTES = 0.037
 INDEXAR_PRECIOS = False
 
 # --- Valoración --------------------------------------------------------------
-TASA_LIBRE_RIESGO = 0.034       # bono español a 10 años, julio de 2026
-PRIMA_MERCADO = 0.055           # prima de riesgo del mercado español
+TASA_LIBRE_RIESGO = 0.042       # Obligaciones del Estado a 10 años, subasta del Tesoro de 1/10/2026 (4,176 %)
+PRIMA_MERCADO = 0.055           # prima implícita de mercado maduro + riesgo país (Damodaran, 2026)
 BETA = 1.0                      # servicios profesionales, sin deuda
-PRIMA_ESPECIFICA = 0.061        # tamaño, iliquidez y dependencia del fundador
-TASA_DESCUENTO = TASA_LIBRE_RIESGO + BETA * PRIMA_MERCADO + PRIMA_ESPECIFICA  # 15 %
+PRIMA_ESPECIFICA = 0.053        # tamaño, iliquidez y dependencia del fundador; se redondea al 15 %
+TASA_DESCUENTO = round(TASA_LIBRE_RIESGO + BETA * PRIMA_MERCADO + PRIMA_ESPECIFICA, 3)  # 15 %
 CRECIMIENTO_PERPETUO = 0.01
 # Coste de oportunidad: SMI neto de cotización (6,5 %) como sueldo alternativo
 COSTE_OPORTUNIDAD = [0.5 * SMI_ANUAL * 0.935, SMI_ANUAL * 0.935, SMI_ANUAL * 0.935]
+# Alternativa más exigente: ganancia media anual de los asalariados de 25 a 29 años
+# (INE, Encuesta de Estructura Salarial 2022), en neto (cotización e IRPF)
+SALARIO_INE_25_29 = 20_459.60
