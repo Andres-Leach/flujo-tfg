@@ -582,6 +582,13 @@ def main():
         for e in ("pesimista", "optimista"):
             salida[f"optimizado_{e}"] = resumen(simular(e))
     salida["lineas"] = lineas_negocio()
+    salida["ganancia_hora"] = {}
+    for clave in ("base", "optimizado", "pesimista"):
+        A_ = salida[clave]["anual"]
+        salida["ganancia_hora"][clave] = [A_["resultado_neto"][a] / H.HORAS_TOTALES_ANUALES[a] for a in range(3)]
+    v_ = salida["base"]["valoracion"]
+    salida["ganancia_hora"]["smi"] = H.SMI_ANUAL * 0.935 / 1_760
+    salida["ganancia_hora"]["ine"] = v_["neto_ine"] / 1_760
     salida["criticos"] = valores_criticos()
     salida["criticos_opt"] = valores_criticos(cambios)
     salida["unit_economics"] = unit_economics(simular("base"))

@@ -146,3 +146,6 @@ COSTE_OPORTUNIDAD = [0.5 * SMI_ANUAL * 0.935, SMI_ANUAL * 0.935, SMI_ANUAL * 0.9
 # Alternativa más exigente: ganancia media anual de los asalariados de 25 a 29 años
 # (INE, Encuesta de Estructura Salarial 2022), en neto (cotización e IRPF)
 SALARIO_INE_25_29 = 20_459.60
+# Dedicación total del fundador (servicio, captación, contenido y gestión):
+# media jornada el año 1 y jornada completa (unas 1.760 h/año) después
+HORAS_TOTALES_ANUALES = [880, 1_760, 1_760]

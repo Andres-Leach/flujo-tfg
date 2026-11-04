@@ -6,8 +6,8 @@ En Google Forms: pestaña "Respuestas" > icono de Hojas de cálculo > en la hoja
 Archivo > Descargar > Valores separados por comas (.csv).
 
 Genera resultados_encuesta.json (para el documento), figuras en ../figuras y un
-resumen por pantalla. Solo cuenta las respuestas válidas: consentimiento, 20-35
-años y trabajo por cuenta propia.
+resumen por pantalla. Muestra principal: consentimiento, 20-35 años y autónomos
+dados de alta o freelancers sin alta; los socios de sociedades se cuentan aparte.
 """
 import csv
 import json
@@ -71,17 +71,27 @@ def van_westendorp(muy_barato, barato, caro, muy_caro):
 def main(ruta):
     with open(ruta, encoding="utf-8-sig") as f:
         filas = list(csv.DictReader(f))
-    validas = [r for r in filas
-               if columna(r, "P0").startswith("Sí")
-               and columna(r, "P1") in EDADES_VALIDAS
-               and columna(r, "P2") and not columna(r, "P2").startswith("No trabajo")]
+    # Esquema de selección de la muestra
+    consienten = [r for r in filas if columna(r, "P0").startswith("Sí")]
+    en_edad = [r for r in consienten if columna(r, "P1") in EDADES_VALIDAS]
+    por_cuenta_propia = [r for r in en_edad if columna(r, "P2") and not columna(r, "P2").startswith("No trabajo")]
+    sociedades = [r for r in por_cuenta_propia if columna(r, "P2").startswith("Tengo una sociedad")]
+    # Muestra principal: autónomos dados de alta y freelancers sin alta (el público de Flujo).
+    # Los socios de sociedades se cuentan aparte y no entran en el análisis principal.
+    validas = [r for r in por_cuenta_propia if r not in sociedades]
+    seleccion = dict(recibidas=len(filas), sin_consentimiento=len(filas) - len(consienten),
+                     fuera_de_edad=len(consienten) - len(en_edad),
+                     no_cuenta_propia=len(en_edad) - len(por_cuenta_propia),
+                     socios_sociedad=len(sociedades), muestra_final=len(validas),
+                     autonomos_alta=sum(columna(r, "P2").startswith("Estoy dado") for r in validas),
+                     freelance_sin_alta=sum(columna(r, "P2").startswith("Trabajo como freelance") for r in validas))
     n = len(validas)
     if n == 0:
         sys.exit("No hay respuestas válidas en el archivo.")
 
     cuenta = lambda pre, cond: sum(cond(columna(r, pre)) for r in validas)
     res = dict(
-        respuestas_totales=len(filas), respuestas_validas=n,
+        seleccion=seleccion, respuestas_totales=len(filas), respuestas_validas=n,
         no_sabe_neto_exacto=pct(cuenta("P7", lambda v: v != "Sí, con exactitud"), n),
         no_sabe_neto=pct(cuenta("P7", lambda v: v == "No"), n),
         no_separa=pct(cuenta("P8", lambda v: v in ("No", "A medias")), n),
@@ -125,6 +135,21 @@ def main(ruta):
         ax.spines[["top", "right"]].set_visible(False)
         ax.legend(frameon=False, fontsize=8, loc="center right")
         fig.savefig(RAIZ / "figuras" / "fig_van_westendorp.png", dpi=200, bbox_inches="tight")
+
+    # Contraste de los umbrales fijados de antemano (Tabla III.2 del TFG)
+    vw = res.get("van_westendorp", {})
+    pref = lambda op: pct(res["formatos"].get(op, 0), n)
+    res["umbrales"] = {
+        "problema_neto": res["no_sabe_neto_exacto"] >= 50,
+        "problema_cuentas": res["no_separa"] >= 40,
+        "problema_impuestos": res["no_reserva_siempre"] >= 40,
+        "interes": res["interes_alto"] >= 40,
+        "demanda_75": res["contrataria_75"] >= 25,
+        "precio_75_aceptable": bool(vw) and (vw.get("precio_minimo") or 0) <= 75 <= (vw.get("precio_maximo") or 0),
+        "productos_digitales": max(pref("Plantillas para llevar las cuentas"), pref("Cursos cortos con ejemplos prácticos")) >= 30,
+        "herramienta": pref("Una aplicación con avisos y previsiones") >= 30,
+        "talleres": pref("Talleres en grupo con otros autónomos") >= 20,
+    }
 
     salida = RAIZ / "encuesta" / "resultados_encuesta.json"
     salida.write_text(json.dumps(res, indent=1, ensure_ascii=False))
