@@ -500,7 +500,7 @@ def build(ruta, escenario="base", palancas=("No",) * 5):
     arow("c2", "Segunda estimación de la cuota", lambda j, c: "=" + tramo(computable(c, f"{c}{A['c1']}")), EUR2)
     arow("cuota", "Cuota mensual aplicada",
          lambda j, c: (f"={N['tp']}" if j == 0 else
-                       f"=IF({ANIOS[0]}{A['rn']}+12*{N['tp']}<{N['smi']},{N['tp']},{c}{A['c2']})" if j == 1 else f"={c}{A['c2']}"),
+                       f"=IF({computable(c, N['tp'])}<{N['smi']},{N['tp']},{c}{A['c2']})" if j == 1 else f"={c}{A['c2']}"),
          EUR2, negrita=True)
     for c in ANIOS:
         anu[f"{c}{A['reta']}"] = f"=-12*{c}{A['cuota']}"

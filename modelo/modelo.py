@@ -96,7 +96,9 @@ def simular(nombre="base", precio=None, tasa=None, factor_altas=None, indexar_pr
         # cuotas pagadas (art. 308 LGSS, redacción del RDL 13/2022)
         comp = [rn[a] + 12 * reta_anual[a] for a in range(3)]
         nueva = [H.TARIFA_PLANA,
-                 H.TARIFA_PLANA if comp[0] < H.SMI_ANUAL else cuota_reta(comp[1]),
+                 # prórroga de la tarifa plana: si se prevé que el rendimiento del
+                 # propio año 2 será inferior al SMI (art. 38 ter LETA, RDL 13/2022)
+                 H.TARIFA_PLANA if comp[1] < H.SMI_ANUAL else cuota_reta(comp[1]),
                  cuota_reta(comp[2])]
         if nueva == reta_anual:
             break
