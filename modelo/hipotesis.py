@@ -149,3 +149,6 @@ SALARIO_INE_25_29 = 20_459.60
 # Dedicación total del fundador (servicio, captación, contenido y gestión):
 # media jornada el año 1 y jornada completa (unas 1.760 h/año) después
 HORAS_TOTALES_ANUALES = [880, 1_760, 1_760]
+# Tiempo del fundador para conseguir una alta: unas 10 conversaciones de 30 minutos
+# y 4 diagnósticos de 1 hora por cada 1,2 altas (embudo del apartado 6.1)
+HORAS_CAPTACION_POR_ALTA = (10 * 0.5 + 4 * 1) / 1.2

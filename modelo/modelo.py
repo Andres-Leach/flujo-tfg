@@ -433,6 +433,9 @@ def sensibilidad():
     filas["precio"] = {p: simular("base", precio=p)["valoracion"]["van"] for p in (55, 65, 75, 85, 95)}
     filas["altas"] = {f: simular("base", factor_altas=f)["valoracion"]["van"] for f in (0.5, 0.75, 1.0, 1.25)}
     filas["tasa"] = {t: simular("base", tasa=t)["valoracion"]["van"] for t in (0.10, 0.15, 0.20, 0.30)}
+    with con(CUOTA_CLIENTES_RETENCION=0.0):
+        r0 = simular("base")
+    filas["sin_retencion"] = {"van": r0["valoracion"]["van"], "caja_min": r0["anual"]["caja_min"]}
     r = simular("base", indexar_precios=True)["valoracion"]
     filas["precios_indexados"] = {"van": r["van"], "van_oportunidad": r["van_oportunidad"]}
     return filas
@@ -495,8 +498,14 @@ def unit_economics(res):
     vida = 1 / H.BAJA_MENSUAL
     ltv = margen_mes * vida + H.PRECIO_SETUP * (1 - H.COMISION_COBRO)
     cac = [A["marketing"][a] / A["altas"][a] for a in range(3)]
+    # Versión ajustada: se valora el tiempo del fundador al salario neto por hora de un
+    # asalariado de 25 a 29 años (INE) en la atención y en la captación de cada cliente
+    hora = neto_asalariado(H.SALARIO_INE_25_29) / 1_760
+    ltv_aj = (margen_mes - H.HORAS_CLIENTE_MES * hora) * vida + H.PRECIO_SETUP * (1 - H.COMISION_COBRO) - H.HORAS_SETUP * hora
+    cac_aj = [c + H.HORAS_CAPTACION_POR_ALTA * hora for c in cac]
     return dict(margen_mes=margen_mes, vida_meses=vida, ltv=ltv, cac=cac,
-                ltv_cac=[ltv / c for c in cac], recuperacion_cac_meses=[c / margen_mes for c in cac])
+                ltv_cac=[ltv / c for c in cac], recuperacion_cac_meses=[c / margen_mes for c in cac],
+                valor_hora=hora, ltv_aj=ltv_aj, cac_aj=cac_aj, ltv_cac_aj=[ltv_aj / c for c in cac_aj])
 
 
 def montecarlo(n=2000, semilla=2027, cambios=None):
